@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+
 import type { Money } from '@/lib/shopify/types'
 import { formatMoney, getDiscountPercentage } from '@/lib/utils'
 import { cn } from '@/lib/utils'

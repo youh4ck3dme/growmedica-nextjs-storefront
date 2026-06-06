@@ -26,7 +26,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
   if (!collection) notFound()
 
   const c = collection!
-  const products = c.products.edges.map((e) => e.node)
+  const products = c.products?.edges?.map((e) => e.node) || []
 
   return (
     <div className="py-8 lg:py-12">

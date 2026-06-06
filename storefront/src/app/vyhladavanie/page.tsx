@@ -1,4 +1,4 @@
-import Link from 'next/link'
+
 import type { Metadata } from 'next'
 import { Container } from '@/components/ui/Container'
 import { EmptyState } from '@/components/ui/EmptyState'

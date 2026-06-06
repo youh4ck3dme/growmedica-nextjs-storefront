@@ -92,7 +92,6 @@ export const PRODUCT_LIST_ITEM_FRAGMENT = /* GraphQL */ `
 
 export const PRODUCT_DETAIL_FRAGMENT = /* GraphQL */ `
   ${IMAGE_FRAGMENT}
-  ${MONEY_FRAGMENT}
   ${PRODUCT_VARIANT_FRAGMENT}
   fragment ProductDetailFragment on Product {
     id
@@ -237,7 +236,6 @@ export const GET_FEATURED_PRODUCTS_QUERY = /* GraphQL */ `
 
 export const GET_COLLECTION_BY_HANDLE_QUERY = /* GraphQL */ `
   ${IMAGE_FRAGMENT}
-  ${MONEY_FRAGMENT}
   ${PRODUCT_LIST_ITEM_FRAGMENT}
   query GetCollectionByHandle($handle: String!, $first: Int!, $after: String) {
     collection(handle: $handle) {

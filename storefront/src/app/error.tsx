@@ -1,6 +1,8 @@
 'use声明 client' // Wait, standard next.js directive is 'use client'
 'use client'
 
+import Link from 'next/link'
+
 import { useEffect } from 'react'
 import { Container } from '@/components/ui/Container'
 
@@ -37,9 +39,9 @@ export default function ErrorPage({ error, reset }: ErrorProps) {
             >
               Skúsiť znova
             </button>
-            <a href="/" className="btn btn-secondary">
+            <Link href="/" className="btn btn-secondary">
               Domov
-            </a>
+            </Link>
           </div>
         </div>
       </Container>

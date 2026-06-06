@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { Metadata } from 'next'
 import { Container } from '@/components/ui/Container'
 import { ProductGrid } from '@/components/product/ProductGrid'
@@ -68,7 +69,7 @@ export default async function ProduktyPage({ searchParams }: ProductsPageProps) 
         <div className="flex items-center gap-3 mb-6 flex-wrap">
           <span className="text-sm text-[var(--color-text-muted)]">Zoradiť:</span>
           {SORT_OPTIONS.map((option, i) => (
-            <a
+            <Link
               key={i}
               href={`/produkty?zoradenie=${option.value}${option.reverse ? '&rev=1' : ''}${query ? `&q=${encodeURIComponent(query)}` : ''}`}
               className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
@@ -78,7 +79,7 @@ export default async function ProduktyPage({ searchParams }: ProductsPageProps) 
               }`}
             >
               {option.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -99,9 +100,9 @@ export default async function ProduktyPage({ searchParams }: ProductsPageProps) 
             <p className="text-sm text-[var(--color-text-muted)] mb-4">
               Zobrazených {products.length} produktov
             </p>
-            <a href="/produkty?dalej=1" className="btn btn-secondary">
+            <Link href="/produkty?dalej=1" className="btn btn-secondary">
               Načítať ďalšie produkty
-            </a>
+            </Link>
           </div>
         )}
       </Container>

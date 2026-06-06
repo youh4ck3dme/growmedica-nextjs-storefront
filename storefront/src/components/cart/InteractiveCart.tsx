@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Price } from '@/components/ui/Price'
+
 import type { Cart } from '@/lib/shopify/types'
 
 interface InteractiveCartProps {

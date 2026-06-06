@@ -4,6 +4,7 @@ import '@/styles/globals.css'
 import { DEFAULT_METADATA } from '@/lib/seo'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import CookieBanner from '@/components/ui/CookieBanner'
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
@@ -38,6 +39,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <CookieBanner />
         </div>
       </body>
     </html>

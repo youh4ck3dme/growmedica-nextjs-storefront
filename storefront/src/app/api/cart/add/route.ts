@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       cart = await createCart([{ merchandiseId: variantId, quantity }])
     }
 
-    const count = cart.lines.edges.reduce((total: number, edge: any) => total + (edge.node.quantity || 0), 0)
+    const count = cart.lines.edges.reduce((total: number, edge: { node: { quantity?: number } }) => total + (edge.node.quantity || 0), 0)
     const response = NextResponse.json({ cart, count })
 
     response.cookies.set(CART_COOKIE, cart.id, {

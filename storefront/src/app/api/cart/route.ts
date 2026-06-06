@@ -3,9 +3,9 @@ import { cookies } from 'next/headers'
 import { getCart, updateCartLines, removeCartLines, CART_COOKIE } from '@/lib/shopify/cart'
 
 // Helper to compute total cart item count
-function getCartCount(cart: any) {
+function getCartCount(cart: { lines?: { edges?: Array<{ node: { quantity?: number } }> } }) {
   if (!cart?.lines?.edges) return 0
-  return cart.lines.edges.reduce((total: number, edge: any) => total + (edge.node.quantity || 0), 0)
+  return cart.lines.edges.reduce((total: number, edge: { node: { quantity?: number } }) => total + (edge.node.quantity || 0), 0)
 }
 
 export async function GET() {
