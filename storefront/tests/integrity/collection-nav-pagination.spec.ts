@@ -1,8 +1,6 @@
+import '../helpers/shopify-env'
 import { expect, test } from '@playwright/test'
-
-process.env.SHOPIFY_STORE_DOMAIN = 'mock-store.myshopify.com'
-process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN = 'mock-storefront-token'
-process.env.SHOPIFY_API_VERSION = '2025-01'
+import { getCollectionViewByHandle } from '../../src/lib/shopify/collection-nav'
 
 type ShopifyFetchCall = {
   operation: string
@@ -114,8 +112,6 @@ test.describe('collection catalog pagination', () => {
     const mock = installShopifyFetchMock([])
 
     try {
-      const { getCollectionViewByHandle } = await import('../../src/lib/shopify/collection-nav')
-
       const view = await getCollectionViewByHandle('vitaminy-mineraly', { page: 1 })
 
       expect(view).toBeNull()
@@ -133,8 +129,6 @@ test.describe('collection catalog pagination', () => {
     const mock = installShopifyFetchMock([])
 
     try {
-      const { getCollectionViewByHandle } = await import('../../src/lib/shopify/collection-nav')
-
       const view = await getCollectionViewByHandle('vitaminy-mineraly', { page: 2 })
 
       expect(view).toMatchObject({
