@@ -663,6 +663,10 @@
     isolation: isolate;
   }
 
+  .hero-slider__video {
+    pointer-events: none;
+  }
+
   .hero-slider__overlay {
     background: linear-gradient(
       105deg,

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
 import { getImageProps } from 'next/image'
 import { preload } from 'react-dom'
 import { Container } from '@/components/ui/Container'
@@ -12,7 +13,12 @@ import { getNavCollectionItems } from '@/lib/shopify/collection-nav'
 import { getFeaturedProducts } from '@/lib/shopify/products'
 import { getHomepageCategories } from '@/lib/category-map'
 import { BRAND_COPY } from '@/lib/brand'
-import { HERO_IMAGE_SIZES, HERO_LCP_QUALITY } from '@/lib/hero-image'
+import { HERO_IMAGE_SIZES, HERO_LCP_QUALITY, HERO_VIDEO_SRC } from '@/lib/hero-image'
+import {
+  isStorefrontTheme,
+  resolveInitialTheme,
+  STORAGE_KEY,
+} from '@/lib/theme/storefront-theme'
 import type { ProductListItem } from '@/lib/shopify/types'
 
 const SupplementFinder = dynamic(
@@ -92,10 +98,18 @@ export default async function HomePage() {
     .map((def) => categoriesByHandle.get(def.slug))
     .filter((c): c is NonNullable<typeof c> => Boolean(c))
 
+  const cookieStore = await cookies()
+  const cookieTheme = cookieStore.get(STORAGE_KEY)?.value
+  const ssrTheme = resolveInitialTheme(
+    isStorefrontTheme(cookieTheme) ? cookieTheme : null,
+  )
+
   const heroSlides = buildHeroSlides(featuredProducts)
   const lcpSlide = heroSlides[0]
 
-  if (lcpSlide?.imageUrl) {
+  if (ssrTheme === 'noor') {
+    preload(HERO_VIDEO_SRC, { as: 'video', type: 'video/mp4' })
+  } else if (lcpSlide?.imageUrl) {
     preloadHeroLcpImage(lcpSlide)
   }
 
