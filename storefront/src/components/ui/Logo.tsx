@@ -1,4 +1,5 @@
 import { BRAND_COPY } from '@/lib/brand'
+import { cn } from '@/lib/utils'
 
 interface LogoProps {
   variant?: 'light' | 'dark'
@@ -53,10 +54,10 @@ export default function Logo({
   const skColor = variant === 'dark' ? '#D1D5DB' : '#6B7280'
 
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
+    <div className={cn('storefront-logo flex items-center gap-2.5', className)}>
       <LogoIcon size={iconSize} />
       <span
-        className="text-lg sm:text-xl font-extrabold tracking-tight whitespace-nowrap leading-none"
+        className="storefront-logo__wordmark text-lg sm:text-xl font-extrabold tracking-tight whitespace-nowrap leading-none"
         style={{ fontFamily: 'Montserrat, sans-serif' }}
         aria-label={BRAND_COPY.siteName}
       >

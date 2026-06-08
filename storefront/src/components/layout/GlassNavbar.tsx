@@ -8,20 +8,9 @@ import Logo from '@/components/ui/Logo'
 import MobileNav from '@/components/layout/MobileNav'
 import HeaderMegaMenu, { type MegaMenuCategory } from '@/components/layout/HeaderMegaMenu'
 import { StorefrontThemeSwitcher } from '@/components/theme/StorefrontThemeSwitcher'
+import { PRIMARY_NAV_LINKS } from '@/lib/navigation/primary-nav'
 import { shouldHideThemeSwitcher } from '@/lib/theme/storefront-theme'
 import { cn } from '@/lib/utils'
-
-const BASE_NAV_LINKS = [
-  { href: '/produkty', label: 'Produkty' },
-  { href: '/o-nas', label: 'O nás' },
-]
-
-const MOBILE_EXTRA_LINKS = [{ href: '/vyhladavanie', label: 'Vyhľadávanie' }]
-
-export interface NavLinkItem {
-  href: string
-  label: string
-}
 
 interface GlassNavbarProps {
   megaMenuCategories?: MegaMenuCategory[]
@@ -32,12 +21,10 @@ export default function GlassNavbar({ megaMenuCategories = [] }: GlassNavbarProp
   const [cartCount, setCartCount] = useState(0)
   const [scrolled, setScrolled] = useState(false)
 
-  const mobileLinks: NavLinkItem[] = [
-    ...megaMenuCategories.map((c) => ({ href: c.href, label: c.menuLabel })),
-    { href: '/kolekcie', label: 'Všetky kategórie' },
-    ...BASE_NAV_LINKS,
-    ...MOBILE_EXTRA_LINKS,
-  ]
+  const categoryLinks = megaMenuCategories.map((c) => ({
+    href: c.href,
+    label: c.menuLabel,
+  }))
 
   useEffect(() => {
     async function fetchCartCount() {
@@ -71,7 +58,7 @@ export default function GlassNavbar({ megaMenuCategories = [] }: GlassNavbarProp
   }, [])
 
   const navLinkClass =
-    'px-3 py-2 text-sm font-semibold text-(--color-text-muted) hover:text-(--color-primary) transition-colors uppercase tracking-wider relative group whitespace-nowrap'
+    'px-2.5 xl:px-3 py-2 text-sm font-semibold text-(--color-text) hover:text-(--color-primary) transition-colors uppercase tracking-wider relative group whitespace-nowrap'
 
   const showThemeSwitcher = !shouldHideThemeSwitcher()
 
@@ -109,12 +96,10 @@ export default function GlassNavbar({ megaMenuCategories = [] }: GlassNavbarProp
             </Link>
 
             <nav
-              className="noor-header-nav hidden lg:flex items-center gap-0 min-w-0 flex-1 justify-center"
+              className="noor-header-nav hidden lg:flex items-center gap-0 min-w-0 flex-1 justify-center flex-wrap"
               aria-label="Hlavná navigácia"
             >
-              <HeaderMegaMenu categories={megaMenuCategories} />
-
-              {BASE_NAV_LINKS.map((link) => (
+              {PRIMARY_NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -125,6 +110,10 @@ export default function GlassNavbar({ megaMenuCategories = [] }: GlassNavbarProp
                   <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-(--color-primary) scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                 </Link>
               ))}
+
+              {megaMenuCategories.length > 0 && (
+                <HeaderMegaMenu categories={megaMenuCategories} />
+              )}
             </nav>
 
             <div className="noor-header-right flex items-center gap-0.5 shrink-0">
@@ -132,7 +121,7 @@ export default function GlassNavbar({ megaMenuCategories = [] }: GlassNavbarProp
               <Link
                 href="/vyhladavanie"
                 id="search-button"
-                className="glass-navbar__action"
+                className="glass-navbar__action lg:hidden"
                 aria-label="Vyhľadávanie"
               >
                 <Search className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
@@ -159,7 +148,12 @@ export default function GlassNavbar({ megaMenuCategories = [] }: GlassNavbarProp
         </Container>
       </header>
 
-      <MobileNav isOpen={mobileOpen} onClose={() => setMobileOpen(false)} links={mobileLinks} />
+      <MobileNav
+        isOpen={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        primaryLinks={PRIMARY_NAV_LINKS}
+        categoryLinks={categoryLinks}
+      />
     </>
   )
 }

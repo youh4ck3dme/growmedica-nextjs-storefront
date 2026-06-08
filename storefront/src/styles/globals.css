@@ -1312,6 +1312,8 @@
     font-weight: 600;
   }
 
+  [data-storefront-theme="noor"] .storefront-logo__wordmark,
+  [data-storefront-theme="noor"] .site-logo-mark .storefront-logo__wordmark,
   [data-storefront-theme="noor"] .site-logo-mark span {
     font-family: var(--font-playfair), Georgia, serif !important;
     font-weight: 500 !important;
@@ -1320,12 +1322,18 @@
     font-size: 1.05rem !important;
   }
 
+  [data-storefront-theme="noor"] .storefront-logo__wordmark span,
   [data-storefront-theme="noor"] .site-logo-mark span span {
     color: var(--noor-ink) !important;
   }
 
+  [data-storefront-theme="noor"] .storefront-logo svg,
   [data-storefront-theme="noor"] .site-logo-mark svg {
     display: none;
+  }
+
+  [data-storefront-theme="noor"] .footer-brand-logo .storefront-logo__wordmark span {
+    color: #ffffff !important;
   }
 
   /* Header — mobile 3-column NOOR layout */
