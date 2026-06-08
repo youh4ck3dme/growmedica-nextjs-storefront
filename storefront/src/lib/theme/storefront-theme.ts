@@ -2,6 +2,7 @@ export type StorefrontTheme = 'classic' | 'noor'
 
 export const STORAGE_KEY = 'growmedica-storefront-theme'
 export const THEME_CHANGED_EVENT = 'storefront-theme-changed'
+export const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 
 export function getDefaultTheme(): StorefrontTheme {
   return process.env.NEXT_PUBLIC_DEFAULT_THEME === 'noor' ? 'noor' : 'classic'
@@ -34,16 +35,25 @@ export function getThemeBootstrapScript(): string {
     var key = '${STORAGE_KEY}';
     var defaultTheme = '${defaultTheme}';
     var lockedDemo = ${lockedDemo ? 'true' : 'false'};
-    var t = localStorage.getItem(key);
-    if (!lockedDemo && (t === 'noor' || t === 'classic')) {
-      document.documentElement.setAttribute('data-storefront-theme', t);
-    } else {
-      document.documentElement.setAttribute('data-storefront-theme', defaultTheme);
+    var html = document.documentElement;
+    var ssrTheme = html.getAttribute('data-storefront-theme');
+    var stored = lockedDemo ? null : localStorage.getItem(key);
+    var preferred = lockedDemo
+      ? defaultTheme
+      : (stored === 'noor' || stored === 'classic' ? stored : (ssrTheme || defaultTheme));
+
+    if (!ssrTheme || lockedDemo) {
+      html.setAttribute('data-storefront-theme', preferred);
     }
   } catch (e) {
     document.documentElement.setAttribute('data-storefront-theme', '${defaultTheme}');
   }
 })();`
+}
+
+export function setThemeCookie(theme: StorefrontTheme): void {
+  if (typeof document === 'undefined') return
+  document.cookie = `${STORAGE_KEY}=${theme};path=/;max-age=${THEME_COOKIE_MAX_AGE};SameSite=Lax`
 }
 
 export function isStorefrontTheme(value: unknown): value is StorefrontTheme {
