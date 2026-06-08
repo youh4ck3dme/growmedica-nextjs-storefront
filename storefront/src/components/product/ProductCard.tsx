@@ -1,5 +1,10 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import type { ProductListItem } from '@/lib/shopify/types'
+import {
+  getShopifySizedImageUrl,
+  PRODUCT_CARD_IMAGE_SIZES,
+} from '@/lib/shopify/image-url'
 import { getProductUrl } from '@/lib/utils'
 import { Price } from '@/components/ui/Price'
 
@@ -22,6 +27,8 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
     ? Math.round((1 - parseFloat(price.amount) / parseFloat(compareAtPrice!.amount)) * 100)
     : 0
 
+  const imageSrc = image ? getShopifySizedImageUrl(image.url) : '/images/product-placeholder.svg'
+
   return (
     <article className="product-card noor-product-card group" aria-label={product.title}>
       <Link
@@ -30,25 +37,18 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         tabIndex={-1}
         aria-hidden="true"
       >
-        <div className="relative aspect-square noor-product-media overflow-hidden bg-white">
-          {image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={image.url}
-              alt={image.altText ?? product.title}
-              loading={priority ? 'eager' : 'lazy'}
-              decoding="async"
-              className="h-full w-full object-contain p-3 transition-transform duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-(--color-surface-2)">
-              <svg className="h-12 w-12 text-(--color-text-light)" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            </div>
-          )}
+        <div className="product-card__media relative aspect-square noor-product-media overflow-hidden bg-white">
+          <Image
+            src={imageSrc}
+            alt={image?.altText ?? product.title}
+            fill
+            sizes={PRODUCT_CARD_IMAGE_SIZES}
+            quality={75}
+            priority={priority}
+            loading={priority ? 'eager' : 'lazy'}
+            className="product-card__image object-contain p-3"
+          />
 
-          {/* Quick-add cart button */}
           <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <span className="btn-icon flex items-center justify-center shadow-md" aria-hidden="true">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -84,7 +84,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           </Link>
         </h3>
 
-        <p className="text-xs font-medium" style={{ color: product.availableForSale ? 'var(--color-primary-dark)' : 'var(--color-error)' }}>
+        <p className="product-card__stock text-xs font-semibold">
           {product.availableForSale ? '✓ Skladom' : '✗ Vypredané'}
         </p>
 

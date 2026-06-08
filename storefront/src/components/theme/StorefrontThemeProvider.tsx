@@ -14,6 +14,8 @@ import {
   DEFAULT_THEME,
   getDocumentTheme,
   isLockedNoorDemo,
+  readStoredTheme,
+  setThemeCookie,
   STORAGE_KEY,
   THEME_CHANGED_EVENT,
   type StorefrontTheme,
@@ -56,15 +58,38 @@ export function StorefrontThemeProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    const current = getDocumentTheme()
-    setTheme(current)
-
-    if (isLockedNoorDemo() && current !== DEFAULT_THEME) {
-      applyThemeToDocument(DEFAULT_THEME)
+    if (isLockedNoorDemo()) {
+      const current = getDocumentTheme()
+      if (current !== DEFAULT_THEME) {
+        applyThemeToDocument(DEFAULT_THEME)
+      }
       setTheme(DEFAULT_THEME)
+      if (DEFAULT_THEME === 'noor') {
+        requestAnimationFrame(() => {
+          document.documentElement.classList.add('theme-reveal-play')
+        })
+      }
+      return () => {
+        clearTimers()
+      }
     }
 
-    if (current === 'noor' || (isLockedNoorDemo() && DEFAULT_THEME === 'noor')) {
+    const stored = readStoredTheme()
+    const current = getDocumentTheme()
+
+    if (stored && stored !== current) {
+      applyThemeToDocument(stored)
+      setThemeCookie(stored)
+      setTheme(stored)
+    } else {
+      setTheme(current)
+      if (stored) {
+        setThemeCookie(stored)
+      }
+    }
+
+    const resolved = stored && stored !== current ? stored : current
+    if (resolved === 'noor') {
       requestAnimationFrame(() => {
         document.documentElement.classList.add('theme-reveal-play')
       })
@@ -89,6 +114,7 @@ export function StorefrontThemeProvider({ children }: { children: ReactNode }) {
 
         try {
           localStorage.setItem(STORAGE_KEY, next)
+          setThemeCookie(next)
         } catch {
           /* ignore quota / private mode */
         }

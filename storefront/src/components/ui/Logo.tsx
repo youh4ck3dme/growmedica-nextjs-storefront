@@ -50,7 +50,7 @@ export default function Logo({
   className = '',
 }: LogoProps) {
   const growColor = variant === 'dark' ? '#FFFFFF' : '#101615'
-  const medicaColor = '#35C79A'
+  const medicaColor = '#1f7a5a'
   const skColor = variant === 'dark' ? '#D1D5DB' : '#6B7280'
 
   return (
@@ -62,7 +62,7 @@ export default function Logo({
         aria-label={BRAND_COPY.siteName}
       >
         <span style={{ color: growColor }}>Grow</span>
-        <span style={{ color: medicaColor }}>Medica</span>
+        <span className="storefront-logo__accent" style={{ color: medicaColor }}>Medica</span>
         <span style={{ color: skColor }}>.sk</span>
       </span>
     </div>

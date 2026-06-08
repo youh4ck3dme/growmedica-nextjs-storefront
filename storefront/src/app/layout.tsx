@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { cookies } from 'next/headers'
 import Script from 'next/script'
 import { Montserrat, Inter, Playfair_Display } from 'next/font/google'
 import '@/styles/globals.css'
@@ -12,7 +13,7 @@ import CookieBanner from '@/components/ui/CookieBanner'
 import PwaInstallBanner from '@/components/layout/PwaInstallBanner'
 import { StorefrontThemeProvider } from '@/components/theme/StorefrontThemeProvider'
 import { NoorThemeChrome } from '@/components/theme/NoorThemeChrome'
-import { getDefaultTheme, getThemeBootstrapScript } from '@/lib/theme/storefront-theme'
+import { getThemeBootstrapScript, isStorefrontTheme, resolveInitialTheme, STORAGE_KEY } from '@/lib/theme/storefront-theme'
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
@@ -63,19 +64,23 @@ export const viewport: Viewport = {
   themeColor: BRAND_COPY.themeColor,
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const defaultTheme = getDefaultTheme()
+  const cookieStore = await cookies()
+  const cookieTheme = cookieStore.get(STORAGE_KEY)?.value
+  const ssrTheme = resolveInitialTheme(
+    isStorefrontTheme(cookieTheme) ? cookieTheme : null,
+  )
 
   return (
     <html
       lang="sk"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      data-storefront-theme={defaultTheme}
+      data-storefront-theme={ssrTheme}
       className={`${montserrat.variable} ${inter.variable} ${playfair.variable}`}
     >
       <body className="font-(--font-inter) antialiased">
