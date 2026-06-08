@@ -64,7 +64,7 @@ export default async function Footer() {
       <Container>
         <div className="py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="footer-brand col-span-2 md:col-span-1">
-            <Link href="/" className="footer-brand-logo" aria-label="GrowMedica.sk — domov">
+            <Link href="/" className="footer-brand-logo site-logo-mark" aria-label="GrowMedica.sk — domov">
               <Logo variant="dark" iconSize={36} />
             </Link>
             <p className="footer-brand-tagline">{BRAND_COPY.tagline}</p>
