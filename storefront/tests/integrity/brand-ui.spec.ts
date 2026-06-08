@@ -52,7 +52,7 @@ test.describe('Brand UI — homepage copy & structure', () => {
   })
 
   test('USP panel obsahuje všetky 4 value props', () => {
-    expect(html).toContain('class="usp-bar"')
+    expect(html).toMatch(/class="[^"]*\busp-bar\b/)
     for (const label of BRAND_COPY.valueProps) {
       expect(html).toContain(label)
     }
