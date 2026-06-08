@@ -73,7 +73,7 @@ export default async function KolekciePage() {
                           alt={collection.title}
                           fill
                           sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                          className="collection-card-banner-image object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                          className="collection-card-banner-image object-cover object-right transition-transform duration-300 group-hover:scale-105"
                         />
                         <div
                           className="collection-card-banner-overlay absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent"

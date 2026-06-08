@@ -529,6 +529,11 @@
     color: var(--color-text-muted);
   }
 
+  .collection-card-banner-image,
+  .collection-hero-image {
+    object-position: right center;
+  }
+
   .collection-hero-overlay {
     background: linear-gradient(
       90deg,
@@ -560,7 +565,7 @@
 
   .collection-card-banner-image {
     z-index: 0;
-    object-position: center;
+    object-position: right center;
   }
 
   .collection-card-banner-overlay {
