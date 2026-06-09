@@ -45,14 +45,17 @@ export default function CookieBanner() {
         className="max-w-4xl mx-auto rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 bg-white border border-(--color-border)"
         style={{ boxShadow: '0 -4px 30px rgba(16, 22, 21, 0.1)' }}
       >
-        <div className="flex-1 text-sm text-(--color-text-muted) leading-relaxed">
-          <p className="font-semibold text-(--color-text) mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <div className="flex-1 text-sm leading-relaxed text-[#4B5563]">
+          <p className="font-semibold text-[#101615] mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             Používame cookies
           </p>
           <p>
             Táto stránka používa cookies na zlepšenie vášho zážitku z prehliadania.
             Viac informácií nájdete v sekcii{' '}
-            <a href="/ochrana-osobnych-udajov" className="text-(--color-primary) underline hover:text-(--color-primary-dark) transition-colors">
+            <a
+              href="/ochrana-osobnych-udajov"
+              className="text-[#166534] underline hover:text-[#14532d] transition-colors"
+            >
               Ochrana osobných údajov
             </a>.
           </p>
@@ -60,14 +63,14 @@ export default function CookieBanner() {
         <div className="flex gap-3 shrink-0">
           <button
             onClick={decline}
-            className="px-4 py-2.5 rounded-lg text-sm font-semibold text-(--color-text-muted) hover:text-(--color-text) border border-(--color-border) hover:border-(--color-primary) transition-colors"
+            className="px-4 py-2.5 rounded-lg text-sm font-semibold text-[#4B5563] hover:text-[#101615] border border-[#E5E7EB] hover:border-[#166534] transition-colors"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             Odmietnuť
           </button>
           <button
             onClick={accept}
-            className="btn btn-primary px-5 py-2.5"
+            className="btn btn-primary px-5 py-2.5 !text-white !bg-[#166534] !border-[#166534] hover:!bg-[#14532d] hover:!border-[#14532d]"
           >
             Prijať všetky
           </button>

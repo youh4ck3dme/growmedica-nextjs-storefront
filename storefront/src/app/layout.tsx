@@ -9,8 +9,6 @@ import AnnouncementBar from '@/components/layout/AnnouncementBar'
 import HeaderShell from '@/components/layout/HeaderShell'
 import TrustStrip from '@/components/layout/TrustStrip'
 import Footer from '@/components/layout/Footer'
-import CookieBanner from '@/components/ui/CookieBanner'
-import PwaInstallBanner from '@/components/layout/PwaInstallBanner'
 import { DeferredLayoutBanners } from '@/components/layout/DeferredLayoutBanners'
 import { MotionProvider } from '@/components/motion/MotionProvider'
 import { StorefrontThemeProvider } from '@/components/theme/StorefrontThemeProvider'
@@ -109,8 +107,6 @@ export default async function RootLayout({
                 <main className="flex-1">{children}</main>
                 <Footer />
                 <DeferredLayoutBanners />
-                <CookieBanner />
-                <PwaInstallBanner />
               </div>
             </MotionProvider>
           </NoorUiProviders>

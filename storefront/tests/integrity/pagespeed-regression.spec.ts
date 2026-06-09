@@ -37,8 +37,14 @@ test.describe('PageSpeed regression guards', () => {
   })
 
   test('homepage passes Lighthouse color-contrast audit', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' })
+    await page.addInitScript(() => {
+      localStorage.setItem('gm_cookie_consent', 'accepted')
+    })
+
     await page.goto('/')
     await page.waitForLoadState('networkidle')
+    await expect(page.locator('#hero-cta-primary')).toBeVisible()
 
     const results = await page.evaluate(async () => {
       // @ts-expect-error axe injected below

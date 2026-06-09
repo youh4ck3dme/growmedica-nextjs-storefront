@@ -744,6 +744,18 @@
     border-radius: var(--radius-btn);
   }
 
+  .hero-slider__cta.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #ffffff;
+  }
+
+  .hero-slider__cta.btn-primary:hover:not(:disabled) {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+    color: #ffffff;
+  }
+
   .hero-slider__nav {
     position: absolute;
     top: 50%;
