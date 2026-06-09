@@ -57,7 +57,7 @@ export default function StickyAddToCartBar({
   if (!visible) return null
 
   return (
-    <div className="sticky-atc-bar lg:hidden" role="region" aria-label="Rýchle pridanie do košíka">
+    <div className="sticky-atc-bar lg:hidden" role="region" aria-label="Rýchle pridanie produktu do košíka">
       <div className="flex items-center gap-3 px-4 py-3">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-(--color-text)">{productTitle}</p>
@@ -71,7 +71,7 @@ export default function StickyAddToCartBar({
           onClick={handleAdd}
           aria-label="Pridať do košíka"
         >
-          {availableForSale ? 'Do košíka' : 'Vypredané'}
+          {availableForSale ? 'Pridať do košíka' : 'Momentálne vypredané'}
         </Button>
       </div>
     </div>

@@ -19,28 +19,27 @@ export const LEGACY_COLORS = {
 
 export const ANNOUNCEMENT_BAR = {
   enabled: true,
-  message: 'Doprava zdarma pri objednávke nad 50 € · Overené biomedicínske supplementy',
+  message: 'Doprava zdarma od 50 € · Overené biomedicínske doplnky stravy',
   href: '/doprava-a-platba',
   linkLabel: 'Viac info',
 } as const
 
 export const SHIPPING_TAB_CONTENT = [
-  'Objednávky odosielame do 24 hodín v pracovné dni. Doručenie zvyčajne do 1–3 pracovných dní v rámci Slovenska.',
-  'Ak produkt nevyhovuje, môžete ho vrátiť do 30 dní od prevzatia v súlade s našimi obchodnými podmienkami.',
-  'Podrobnosti o doprave, platbe a reklamáciách nájdete v sekcii Doprava a platba.',
+  'Objednávky odosielame do 24 hodín v pracovné dni. Doručenie na Slovensko zvyčajne trvá 1–3 pracovné dni.',
+  'Ak vám produkt nevyhovuje, môžete ho vrátiť do 30 dní od prevzatia podľa našich obchodných podmienok.',
+  'Viac o doprave, platbe a reklamáciách nájdete v sekcii Doprava a platba.',
 ] as const
 
 export const BRAND_COPY = {
   tagline: 'Biomedicínske supplementy · Stredná Európa',
   footerBlurb:
     'Moderná, prémiová a dôveryhodná značka pre zdravie, doplnky výživy a zdravotné produkty.',
-  heroEyebrow: 'Najrýchlejšie rastúci e-shop v regióne',
-  heroTitle: 'Prirodzené biomedicínske supplementy pre váš život',
+  heroEyebrow: 'Overené biomedicínske doplnky stravy',
+  heroTitle: 'Prirodzená podpora zdravia pre váš každodenný život',
   heroSubtitle:
-    'GrowMedica.sk — najrýchlejšie rastúci e-shop v strednej Európe zameraný na prirodzené biomedicínske supplementy.',
-  heroSubtitleShort:
-    'Najrýchlejšie rastúci e-shop biomedicínskych supplementov v strednej Európe.',
-  heroCta: 'Nakupovať',
+    'Vyberte si z ponuky overených produktov s dôrazom na kvalitu, prehľadné zloženie a rýchle doručenie.',
+  heroSubtitleShort: 'Overené produkty, rýchle doručenie, odborné poradenstvo.',
+  heroCta: 'Preskúmať produkty',
   featuredHeading: 'Najpredávanejšie produkty',
   valueProps: ['DÔVERYHODNOSŤ', 'KVALITA', 'RAST', 'PODPORA'] as const,
   logoParts: ['Grow', 'Medica', '.sk'] as const,
@@ -48,11 +47,11 @@ export const BRAND_COPY = {
   siteName: 'GrowMedica.sk',
   siteTitle: 'GrowMedica.sk — biomedicínske supplementy',
   siteDescription:
-    'GrowMedica.sk — najrýchlejšie rastúci e-shop biomedicínskych supplementov v strednej Európe. Prirodzené produkty pre zdravie a vitalitu.',
-  aboutLabel: 'Prečo Growmedica',
+    'GrowMedica.sk — overené biomedicínske doplnky stravy pre zdravie a vitalitu. Rýchle doručenie a odborné poradenstvo.',
+  aboutLabel: 'Prečo GrowMedica',
   aboutHeading: 'Rast, príroda a lekárska presnosť v jednom e-shope',
   aboutBody:
-    'GrowMedica.sk je najrýchlejšie rastúci e-shop v strednej Európe zameraný na prirodzené biomedicínske supplementy. Spájame lekársku presnosť s prírodnou rovnováhou — overené produkty, dôveryhodný nákup a rastúca komunita spokojných zákazníkov.',
+    'GrowMedica.sk spája lekársku presnosť s prírodnou rovnováhou — overené produkty, dôveryhodný nákup a rastúca komunita spokojných zákazníkov.',
   companyName: 'GrowMedica.sk',
   aboutPageTitle: 'O spoločnosti GrowMedica.sk',
   aboutPageIntro:

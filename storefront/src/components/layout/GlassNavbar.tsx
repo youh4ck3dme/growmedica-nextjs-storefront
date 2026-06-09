@@ -82,7 +82,7 @@ export default function GlassNavbar({ megaMenuCategories = [] }: GlassNavbarProp
                 type="button"
                 className="glass-navbar__action lg:hidden text-(--color-text)"
                 onClick={() => setMobileOpen(true)}
-                aria-label="Otvoriť menu"
+                aria-label="Otvoriť hlavné menu"
                 aria-expanded={mobileOpen}
               >
                 <Menu className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
@@ -132,7 +132,7 @@ export default function GlassNavbar({ megaMenuCategories = [] }: GlassNavbarProp
                 href="/kosik"
                 id="cart-button"
                 className="glass-navbar__action relative"
-                aria-label={`Košík${cartCount > 0 ? `, ${cartCount} položiek` : ''}`}
+                aria-label={`Nákupný košík${cartCount > 0 ? `, ${cartCount} položiek` : ''}`}
               >
                 <ShoppingBag className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
                 {cartCount > 0 && (

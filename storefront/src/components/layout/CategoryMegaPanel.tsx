@@ -74,7 +74,7 @@ export default function CategoryMegaPanel({
           className="mega-menu-all-link"
           onClick={onNavigate}
         >
-          Všetky kategórie →
+          Všetky kolekcie →
         </Link>
       </nav>
 

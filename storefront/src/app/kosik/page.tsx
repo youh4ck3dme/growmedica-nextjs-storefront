@@ -32,13 +32,13 @@ export default async function KosikPage() {
   return (
     <div className="py-8 lg:py-12 bg-(--color-surface-2) min-h-[70vh]">
       <Container>
-        <h1 className="text-3xl font-bold text-(--color-text) mb-8">Nákupný košík</h1>
+        <h1 className="text-3xl font-bold text-(--color-text) mb-8">Košík</h1>
 
         {isEmpty ? (
           <EmptyState
             icon="cart"
-            title="Váš košík je prázdny"
-            description="Pridajte si produkty do košíka a pokračujte v nákupe."
+            title="Košík je prázdny"
+            description="Pridajte produkty a pokračujte v nákupe."
             actionLabel="Pokračovať v nákupe"
             actionHref="/produkty"
           />

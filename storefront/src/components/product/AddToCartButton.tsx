@@ -40,7 +40,7 @@ export default function AddToCartButton({
 
       if (!response.ok) {
         const data = await response.json() as { error?: string }
-        throw new Error(data.error ?? 'Nepodarilo sa pridať do košíka')
+        throw new Error(data.error ?? 'Produkt sa nepodarilo pridať do košíka. Skúste to znova.')
       }
 
       const data = await response.json() as { count?: number }
@@ -52,12 +52,12 @@ export default function AddToCartButton({
       setSuccess(true)
       toast({
         title: 'Pridané do košíka',
-        description: 'Produkt bol úspešne pridaný.',
+        description: 'Položka je v košíku. Môžete pokračovať v nákupe.',
         variant: 'success',
       })
       setTimeout(() => setSuccess(false), 2500)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Nastala chyba')
+      setError(err instanceof Error ? err.message : 'Nastala neočakávaná chyba. Skúste to prosím znova.')
     } finally {
       setIsLoading(false)
     }
@@ -71,9 +71,9 @@ export default function AddToCartButton({
         size="lg"
         fullWidth
         disabled
-        aria-label="Produkt je vypredaný"
+        aria-label="Produkt je momentálne vypredaný"
       >
-        Vypredané
+        Momentálne vypredané
       </Button>
     )
   }
@@ -94,7 +94,7 @@ export default function AddToCartButton({
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            Pridané do košíka!
+            Pridané do košíka
           </span>
         ) : (
           <>

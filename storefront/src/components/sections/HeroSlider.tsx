@@ -146,26 +146,26 @@ export function HeroSlider({ slides }: HeroSliderProps) {
 
         <Container className="relative z-10 flex h-full min-h-[inherit] items-center py-10 lg:py-16">
           <m.div
-            className="hero-slider__copy liquid-glass liquid-glass--heavy max-w-xl rounded-3xl p-6 sm:p-8 lg:p-10"
+            className="hero-slider__copy liquid-glass liquid-glass--heavy"
             initial={reduceMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 0.15 }}
           >
-            <p className="section-label mb-3">{BRAND_COPY.heroEyebrow}</p>
+            <p className="section-label hero-slider__eyebrow">{BRAND_COPY.heroEyebrow}</p>
             <h1
               id="hero-heading"
-              className="noor-display-heading text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight text-balance mb-4 text-(--color-text)"
+              className="noor-display-heading hero-slider__title font-extrabold leading-tight text-balance text-(--color-text)"
             >
               {BRAND_COPY.heroTitle}
             </h1>
-            <p className="text-base lg:text-lg leading-relaxed mb-8 text-(--color-text-muted)">
+            <p className="hero-slider__subtitle leading-relaxed text-(--color-text-muted)">
               <span className="sm:hidden">{BRAND_COPY.heroSubtitleShort}</span>
               <span className="hidden sm:inline">{BRAND_COPY.heroSubtitle}</span>
             </p>
             <Link
               href="/produkty"
               id="hero-cta-primary"
-              className="btn btn-primary btn-lg noor-pill-cta w-full sm:w-auto"
+              className="btn btn-primary hero-slider__cta noor-pill-cta w-full sm:w-auto"
             >
               {BRAND_COPY.heroCta}
             </Link>

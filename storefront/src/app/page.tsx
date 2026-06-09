@@ -156,7 +156,7 @@ export default async function HomePage() {
               className="text-sm font-semibold text-(--color-primary) hover:text-(--color-primary-dark) transition-colors"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Všetky kategórie →
+              Všetky kolekcie →
             </Link>
           </div>
         </Container>
@@ -206,7 +206,7 @@ export default async function HomePage() {
       </section>
 
       {/* About / SEO */}
-      <section className="noor-reveal noor-about-block theme-transition py-12 lg:py-16 bg-(--color-surface)" aria-label="O Growmedica">
+      <section className="noor-reveal noor-about-block theme-transition py-12 lg:py-16 bg-(--color-surface)" aria-label="O GrowMedica.sk">
         <Container>
           <div className="noor-about-inner max-w-3xl mx-auto text-center">
             <p className="section-label" style={{ textAlign: 'center' }}>{BRAND_COPY.aboutLabel}</p>

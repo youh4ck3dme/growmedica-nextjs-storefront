@@ -66,8 +66,8 @@ export function InteractiveCart({ initialCart }: InteractiveCartProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
         </div>
-        <h2 className="text-xl font-semibold text-(--color-text) mb-2">Váš košík je prázdny</h2>
-        <p className="text-(--color-text-muted) max-w-md mb-6">Pridajte si produkty do košíka a pokračujte v nákupe.</p>
+        <h2 className="text-xl font-semibold text-(--color-text) mb-2">Košík je prázdny</h2>
+        <p className="text-(--color-text-muted) max-w-md mb-6">Pridajte produkty a pokračujte v nákupe.</p>
         <Link href="/produkty" className="btn btn-primary">
           Pokračovať v nákupe
         </Link>
@@ -99,7 +99,7 @@ export function InteractiveCart({ initialCart }: InteractiveCartProps) {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-(--color-text-muted) text-xs">
-                    Bez obrázku
+                    Obrázok nie je k dispozícii
                   </div>
                 )}
               </div>
@@ -150,9 +150,9 @@ export function InteractiveCart({ initialCart }: InteractiveCartProps) {
                     type="button"
                     onClick={() => handleRemoveItem(line.id)}
                     className="text-xs text-(--color-error) hover:underline ml-3 font-medium"
-                    aria-label="Odstrániť položku"
+                    aria-label="Odstrániť položku z košíka"
                   >
-                    Odstrániť
+                    Odstrániť z košíka
                   </button>
                 </div>
               </div>
@@ -171,7 +171,7 @@ export function InteractiveCart({ initialCart }: InteractiveCartProps) {
       {/* Order summary */}
       <div className="lg:col-span-1">
         <div className="bg-white rounded-xl border border-(--color-border) p-6 sticky top-24">
-          <h2 className="font-semibold text-(--color-text) text-lg mb-4">Súhrn objednávky</h2>
+          <h2 className="font-semibold text-(--color-text) text-lg mb-4">Súhrn nákupu</h2>
 
           <div className="space-y-2 mb-4">
             <div className="flex justify-between text-sm">
@@ -182,13 +182,13 @@ export function InteractiveCart({ initialCart }: InteractiveCartProps) {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-(--color-text-muted)">Doprava</span>
-              <span className="text-(--color-success) font-medium">Vypočíta sa pri pokladni</span>
+              <span className="text-(--color-success) font-medium">Vypočíta sa v pokladni</span>
             </div>
           </div>
 
           <div className="border-t border-(--color-border) pt-4 mb-6">
             <div className="flex justify-between font-bold text-(--color-text)">
-              <span>Spolu</span>
+              <span>Celkom</span>
               <span>
                 {cart.cost.totalAmount.amount} {cart.cost.totalAmount.currencyCode}
               </span>
@@ -203,7 +203,7 @@ export function InteractiveCart({ initialCart }: InteractiveCartProps) {
               className="btn btn-primary btn-lg btn-full text-center"
               rel="noopener"
             >
-              Prejsť k pokladni →
+              Pokračovať do pokladne
             </a>
           )}
 

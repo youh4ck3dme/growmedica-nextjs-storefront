@@ -60,7 +60,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {!product.availableForSale && (
-            <span className="badge badge-error">Vypredané</span>
+            <span className="badge badge-error">Momentálne vypredané</span>
           )}
           {hasDiscount && product.availableForSale && (
             <span className="badge badge-sale">Zľava {discountPct}%</span>
@@ -85,7 +85,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </h3>
 
         <p className="product-card__stock text-xs font-semibold">
-          {product.availableForSale ? '✓ Skladom' : '✗ Vypredané'}
+          {product.availableForSale ? '✓ Dostupné skladom' : '✗ Momentálne vypredané'}
         </p>
 
         <Price
@@ -100,7 +100,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           className="btn btn-primary btn-sm btn-full mt-1"
           aria-label={`Detail produktu: ${product.title}`}
         >
-          Detail
+          Zobraziť produkt
         </Link>
       </div>
     </article>

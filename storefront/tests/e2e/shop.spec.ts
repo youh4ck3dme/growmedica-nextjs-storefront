@@ -52,9 +52,9 @@ test.describe('1. Domovská stránka (Homepage)', () => {
     await expect(featuredHeading).toContainText('Najpredávanejšie produkty');
   });
 
-  test('7. Mal by obsahovať sekciu "Prečo Growmedica" so SEO popisom', async ({ page }) => {
+  test('7. Mal by obsahovať sekciu "Prečo GrowMedica" so SEO popisom', async ({ page }) => {
     await page.goto('/');
-    const aboutSection = page.locator('section[aria-label="O Growmedica"]');
+    const aboutSection = page.locator('section[aria-label="O GrowMedica.sk"]');
     await expect(aboutSection).toBeVisible();
     await expect(aboutSection.locator('.section-label')).toContainText(BRAND_COPY.aboutLabel);
     await expect(aboutSection.locator('h2')).toContainText(BRAND_COPY.aboutHeading);
@@ -200,7 +200,7 @@ test.describe('3. Produkty a Kolekcie', () => {
     
     const badge = detailContainer.locator('.badge-success, .badge-error').first();
     await expect(badge).toBeVisible();
-    await expect(badge).toHaveText(/(Skladom|Vypredané)/);
+    await expect(badge).toHaveText(/(Dostupné skladom|Momentálne vypredané)/);
     await expect(detailContainer.locator('p.uppercase').first()).toBeVisible();
   });
 });
@@ -245,7 +245,7 @@ test.describe('5. Košík a Nákupný Proces', () => {
     await page.goto('/kosik');
     const heading = page.locator('h2');
     await expect(heading).toBeVisible();
-    await expect(heading).toContainText('Váš košík je prázdny');
+    await expect(heading).toContainText('Košík je prázdny');
   });
 
   test('28. Mal by na detaile produktu zobraziť funkčné tlačidlo "Pridať do košíka"', async ({ page }) => {
@@ -305,7 +305,7 @@ test.describe('5. Košík a Nákupný Proces', () => {
       
     await page.goto('/kosik');
       
-    const summaryHeading = page.locator('h2', { hasText: 'Súhrn objednávky' });
+    const summaryHeading = page.locator('h2', { hasText: 'Súhrn nákupu' });
     await expect(summaryHeading).toBeVisible();
       
     const checkoutBtn = page.locator('#checkout-btn');

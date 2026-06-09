@@ -3,6 +3,8 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { SAFE_DISCLAIMER } from '@/lib/ai/compliance'
+import { openPharmacistAssistant } from '@/lib/ai/pharmacist-assistant-events'
 import type { ProductFitOutput } from '@/lib/ai/schemas'
 import { cn } from '@/lib/utils'
 
@@ -14,7 +16,7 @@ const fitBoxClasses: Record<ProductFitOutput['fit'], string> = {
 
 const fitLabels: Record<ProductFitOutput['fit'], string> = {
   good: 'Vhodné',
-  maybe: 'Spýtajte sa',
+  maybe: 'Overte si u lekárnika',
   not_recommended: 'Nevhodné',
 }
 
@@ -45,7 +47,7 @@ export function ProductFitBox({ handle, productTitle }: ProductFitBoxProps) {
 
       const data = (await response.json()) as ProductFitOutput & { error?: string }
       if (!response.ok) {
-        throw new Error(data.error ?? 'Chyba pri overovaní vhodnosti.')
+        throw new Error(data.error ?? 'Nepodarilo sa posúdiť vhodnosť. Skúste to znova.')
       }
 
       setFitData(data)
@@ -59,11 +61,18 @@ export function ProductFitBox({ handle, productTitle }: ProductFitBoxProps) {
   return (
     <div className="mt-8 p-4 border border-(--color-border) rounded-lg bg-(--color-surface-2)">
       <h3 className="text-lg font-semibold mb-1 text-(--color-text)">
-        Je {productTitle} pre vás vhodný?
+        Hodí sa vám produkt {productTitle}?
       </h3>
       <p className="text-sm text-(--color-text-muted) mb-4">
-        AI posúdi vhodnosť podľa vášho popisu. Nie je to lekárska rada.
+        Krátko popíšte svoje ciele — AI posúdi, či vám produkt sedí. {SAFE_DISCLAIMER}
       </p>
+      <button
+        type="button"
+        className="ai-widget-chat-link mb-4"
+        onClick={() => openPharmacistAssistant()}
+      >
+        Poradiť sa s lekárnikom
+      </button>
 
       <form onSubmit={handleCheckFit} className="space-y-4">
         <textarea
@@ -89,7 +98,7 @@ export function ProductFitBox({ handle, productTitle }: ProductFitBoxProps) {
           disabled={!userContext.trim()}
           fullWidth
         >
-          {loading ? 'Overujem…' : 'Overiť vhodnosť'}
+          {loading ? 'Posudzujem vhodnosť…' : 'Overiť vhodnosť pre mňa'}
         </Button>
       </form>
 

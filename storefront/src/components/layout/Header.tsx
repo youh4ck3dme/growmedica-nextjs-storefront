@@ -80,7 +80,7 @@ export default function Header({ megaMenuCategories = [] }: HeaderProps) {
                 id="mobile-nav-toggle"
                 className="p-2 lg:hidden text-(--color-text) hover:text-(--color-primary) transition-colors"
                 onClick={() => setMobileOpen(true)}
-                aria-label="Otvoriť menu"
+                aria-label="Otvoriť hlavné menu"
                 aria-expanded={mobileOpen}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -126,7 +126,7 @@ export default function Header({ megaMenuCategories = [] }: HeaderProps) {
                 href="/kosik"
                 id="cart-button"
                 className="p-2 text-(--color-text-muted) hover:text-(--color-primary) transition-colors rounded-lg relative"
-                aria-label={`Košík${cartCount > 0 ? `, ${cartCount} položiek` : ''}`}
+                aria-label={`Nákupný košík${cartCount > 0 ? `, ${cartCount} položiek` : ''}`}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z" />

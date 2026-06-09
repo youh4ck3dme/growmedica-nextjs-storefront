@@ -34,9 +34,9 @@ export default function ProductPurchasePanel({ product }: ProductPurchasePanelPr
         />
         <ul className="space-y-2">
           {[
-            '✓ Overená kvalita a transparentné zloženie',
-            '✓ Doručenie do 24 hodín',
-            '✓ 30-dňová záruka vrátenia',
+            '✓ Overená kvalita a prehľadné zloženie',
+            '✓ Odoslanie do 24 hodín v pracovné dni',
+            '✓ Vrátenie tovaru do 30 dní',
           ].map((benefit) => (
             <li key={benefit} className="text-sm text-(--color-text-muted)">
               {benefit}

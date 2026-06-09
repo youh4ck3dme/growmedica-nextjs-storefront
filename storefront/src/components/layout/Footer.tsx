@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Container } from '@/components/ui/Container'
 import Logo from '@/components/ui/Logo'
+import { FooterAssistantTrigger } from '@/components/ai/FooterAssistantTrigger'
 import { BRAND_COPY } from '@/lib/brand'
 import { getNavCollectionItems } from '@/lib/shopify/collection-nav'
 
@@ -135,6 +136,9 @@ export default async function Footer() {
                 >
                   Kontaktovať nás
                 </Link>
+              </li>
+              <li>
+                <FooterAssistantTrigger />
               </li>
             </ul>
           </div>

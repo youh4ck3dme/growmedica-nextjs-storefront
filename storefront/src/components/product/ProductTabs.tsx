@@ -15,9 +15,9 @@ interface ProductTabsProps {
 type TabId = 'description' | 'composition' | 'shipping'
 
 const TABS: { id: TabId; label: string }[] = [
-  { id: 'description', label: 'Popis' },
-  { id: 'composition', label: 'Zloženie' },
-  { id: 'shipping', label: 'Doprava & vrátenie' },
+  { id: 'description', label: 'Popis produktu' },
+  { id: 'composition', label: 'Zloženie a účinné látky' },
+  { id: 'shipping', label: 'Doprava a vrátenie' },
 ]
 
 function renderTabContent(

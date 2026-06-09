@@ -1,8 +1,10 @@
 'use client'
 
 import Link from 'next/link'
+import { MessageCircle } from 'lucide-react'
 import { useEffect } from 'react'
 import Logo from '@/components/ui/Logo'
+import { AssistantChatTrigger } from '@/components/ai/PharmacistAssistantDrawer'
 import { StorefrontThemeSwitcher } from '@/components/theme/StorefrontThemeSwitcher'
 import { ThemeSearch } from '@/components/ui/ThemeSearch'
 import type { NavLinkItem } from '@/lib/navigation/primary-nav'
@@ -103,7 +105,7 @@ export default function MobileNav({
                   className="px-3 pb-2 text-xs font-semibold uppercase tracking-widest text-(--color-text-muted)"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
-                  Kategórie
+                  Nakupovať podľa kategórie
                 </p>
               </div>
               <ul className="space-y-1" data-testid="mobile-nav-categories">
@@ -125,6 +127,10 @@ export default function MobileNav({
         </div>
 
         <div className="border-t border-(--color-border) p-4 space-y-3">
+          <AssistantChatTrigger className="assistant-mobile-trigger" onOpen={onClose}>
+            <MessageCircle size={18} aria-hidden="true" />
+            Poradiť sa s lekárnikom
+          </AssistantChatTrigger>
           {!shouldHideThemeSwitcher() && <StorefrontThemeSwitcher compact />}
           <p className="text-xs text-(--color-text-light)">© {new Date().getFullYear()} GrowMedica.sk</p>
         </div>

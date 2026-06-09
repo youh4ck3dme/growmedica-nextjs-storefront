@@ -128,9 +128,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
                 </h1>
                 <div className="flex items-center gap-2 flex-wrap">
                   {p.availableForSale ? (
-                    <Badge variant="success">Skladom</Badge>
+                    <Badge variant="success">Dostupné skladom</Badge>
                   ) : (
-                    <Badge variant="error">Vypredané</Badge>
+                    <Badge variant="error">Momentálne vypredané</Badge>
                   )}
                   {p.productType && <Badge variant="muted">{p.productType}</Badge>}
                   {categorySlug !== 'ostatne' && (
@@ -165,7 +165,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           {relatedProducts.length > 0 && (
             <section className="mt-14" aria-labelledby="related-products-heading">
               <h2 id="related-products-heading" className="section-heading mb-6">
-                Súvisiace produkty
+                Mohlo by sa vám hodiť
               </h2>
               <ProductGrid products={relatedProducts} />
             </section>
