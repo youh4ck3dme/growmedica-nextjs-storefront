@@ -56,8 +56,17 @@ test.describe('1. Domovská stránka (Homepage)', () => {
     await page.goto('/');
     const aboutSection = page.locator('section[aria-label="O GrowMedica.sk"]');
     await expect(aboutSection).toBeVisible();
-    await expect(aboutSection.locator('.section-label')).toContainText(BRAND_COPY.aboutLabel);
+    await expect(aboutSection.locator('.why-growmedica__label')).toContainText(BRAND_COPY.aboutLabel);
     await expect(aboutSection.locator('h2')).toContainText(BRAND_COPY.aboutHeading);
+    await expect(aboutSection.locator('.why-growmedica__slogan')).toContainText(BRAND_COPY.aboutSlogan);
+    await expect(aboutSection.locator('.why-growmedica__glass.liquid-glass')).toBeVisible();
+    await expect(aboutSection.locator('.why-growmedica__health-line')).toHaveCount(BRAND_COPY.aboutHealthLines.length);
+  });
+
+  test('7b. Mal by obsahovať sekciu balíčkov zdravia s odkazom na /balicky', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('#bundles-heading')).toContainText(BRAND_COPY.bundlesHeading);
+    await expect(page.locator('a[href="/balicky"]').first()).toBeVisible();
   });
 
   test('8. Mal by obsahovať pätičku (Footer) s logami platobných možností', async ({ page }) => {
@@ -81,6 +90,12 @@ test.describe('2. Navigácia a Statické Podstránky', () => {
     const heading = page.locator('h1');
     await expect(heading).toBeVisible();
     await expect(heading).toContainText('Doprava a platba');
+  });
+
+  test('10b. Mal by načítať stránku balíčkov zdravia', async ({ page }) => {
+    await page.goto('/balicky');
+    await expect(page.locator('h1')).toContainText(BRAND_COPY.bundlesHeading);
+    await expect(page.locator('.bundle-grid .bundle-card')).toHaveCount(63);
   });
 
   test('11. Mal by úspešne načítať podstránku "Veľkoobchod"', async ({ page }) => {

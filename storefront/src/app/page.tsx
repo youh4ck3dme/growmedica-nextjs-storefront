@@ -9,6 +9,8 @@ import { ProductGrid } from '@/components/product/ProductGrid'
 import { HeroSlider, type HeroSlide } from '@/components/sections/HeroSlider'
 import { TrustBadges } from '@/components/sections/TrustBadges'
 import { ScrollRevealSection } from '@/components/sections/ScrollRevealSection'
+import { WhyGrowMedicaSection } from '@/components/sections/WhyGrowMedicaSection'
+import { BundleShowcase } from '@/components/sections/BundleShowcase'
 import { getNavCollectionItems } from '@/lib/shopify/collection-nav'
 import { getFeaturedProducts } from '@/lib/shopify/products'
 import { getHomepageCategories } from '@/lib/category-map'
@@ -205,20 +207,18 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* About / SEO */}
-      <section className="noor-reveal noor-about-block theme-transition py-12 lg:py-16 bg-(--color-surface)" aria-label="O GrowMedica.sk">
+      {/* About / SEO + balíčky */}
+      <WhyGrowMedicaSection />
+
+      <ScrollRevealSection
+        as="section"
+        className="theme-transition py-12 lg:py-16 bg-(--color-surface-2)"
+        aria-labelledby="bundles-heading"
+      >
         <Container>
-          <div className="noor-about-inner max-w-3xl mx-auto text-center">
-            <p className="section-label" style={{ textAlign: 'center' }}>{BRAND_COPY.aboutLabel}</p>
-            <h2 className="section-heading noor-display-heading mb-4" style={{ textAlign: 'center' }}>
-              {BRAND_COPY.aboutHeading}
-            </h2>
-            <p className="leading-relaxed text-(--color-text-muted)">
-              {BRAND_COPY.aboutBody}
-            </p>
-          </div>
+          <BundleShowcase />
         </Container>
-      </section>
+      </ScrollRevealSection>
     </div>
   )
 }

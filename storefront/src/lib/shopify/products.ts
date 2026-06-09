@@ -63,6 +63,16 @@ export async function getFeaturedProducts(count = 8) {
   return data.products.edges.map((e) => e.node)
 }
 
+export async function getBundleProducts(count = 48): Promise<ProductListItem[]> {
+  const result = await getProducts({
+    first: count,
+    query: `tag:'balicek-zdravia'`,
+    sortKey: 'TITLE',
+  })
+
+  return result.edges.map((e) => e.node)
+}
+
 export async function getAllProductHandlesForSitemap(): Promise<
   Array<{ handle: string; updatedAt: string }>
 > {

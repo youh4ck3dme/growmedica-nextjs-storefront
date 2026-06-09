@@ -47,7 +47,6 @@ export interface ProductCategoryInput {
 
 /** Old /kolekcie slugs → new category slugs (301 in next.config) */
 export const LEGACY_SLUG_REDIRECTS: Record<string, MainCategory> = {
-  'balicky-zdravia': 'specialna-vyziva',
   'doplnky-vyzivy': 'vitaminy-mineraly',
   'mykologicke-produkty': 'specialna-vyziva',
   'zdravotne-riesenia': 'specialna-vyziva',

@@ -108,6 +108,11 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        source: '/kolekcie/balicky-zdravia',
+        destination: '/balicky',
+        permanent: true,
+      },
     ]
   },
 

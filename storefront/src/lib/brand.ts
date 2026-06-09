@@ -52,6 +52,18 @@ export const BRAND_COPY = {
   aboutHeading: 'Rast, príroda a lekárska presnosť v jednom e-shope',
   aboutBody:
     'GrowMedica.sk spája lekársku presnosť s prírodnou rovnováhou — overené produkty, dôveryhodný nákup a rastúca komunita spokojných zákazníkov.',
+  aboutSlogan: 'Zdravie, ktoré rastie s vami.',
+  aboutHealthLines: [
+    'Overené zloženie — bez zbytočných prídavných látok',
+    'Lekárska presnosť pri výbere každého produktu',
+    '460+ doplnkov pre imunitu, pohyb, spánok aj krásu',
+    'Rýchle doručenie a poradenstvo s lekárnikom online',
+    'Balíčky zdravia za zvýhodnené ceny',
+  ] as const,
+  bundlesHeading: 'Balíčky zdravia',
+  bundlesSubheading: 'Overené kombinácie produktov za zvýhodnené ceny',
+  bundlesCta: 'Preskúmať balíčky',
+  bundlesViewAll: 'Všetky balíčky',
   companyName: 'GrowMedica.sk',
   aboutPageTitle: 'O spoločnosti GrowMedica.sk',
   aboutPageIntro:
