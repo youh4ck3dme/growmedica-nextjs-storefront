@@ -10,6 +10,7 @@ import {
   ADD_TO_CART_MUTATION,
   UPDATE_CART_LINES_MUTATION,
   REMOVE_CART_LINES_MUTATION,
+  UPDATE_CART_DISCOUNT_CODES_MUTATION,
 } from './mutations'
 import { GET_CART_QUERY } from './queries'
 import type { Cart } from './types'
@@ -119,4 +120,26 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
   }
 
   return data.cartLinesRemove.cart
+}
+
+export async function updateCartDiscountCodes(
+  cartId: string,
+  discountCodes: string[]
+): Promise<Cart> {
+  const data = await shopifyFetch<{
+    cartDiscountCodesUpdate: {
+      cart: Cart
+      userErrors: Array<{ field: string[]; message: string }>
+    }
+  }>({
+    query: UPDATE_CART_DISCOUNT_CODES_MUTATION,
+    variables: { cartId, discountCodes },
+    cache: 'no-store',
+  })
+
+  if (data.cartDiscountCodesUpdate.userErrors.length > 0) {
+    throw new Error(data.cartDiscountCodesUpdate.userErrors.map((e) => e.message).join(', '))
+  }
+
+  return data.cartDiscountCodesUpdate.cart
 }

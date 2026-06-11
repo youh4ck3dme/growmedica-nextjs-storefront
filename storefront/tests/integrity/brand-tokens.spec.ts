@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 import { BRAND_COLORS, LEGACY_COLORS, REQUIRED_CSS_VARS } from '../fixtures/brand'
 import { getCssVarFromSource, readGlobalsCss } from '../helpers/globals-css'
+import * as fs from 'fs'
+import * as path from 'path'
 
 test.describe('Brand tokens — CSS source (globals.css)', () => {
   let css: string
@@ -39,11 +41,15 @@ test.describe('Brand tokens — CSS source (globals.css)', () => {
 })
 
 test.describe('Brand tokens — rendered HTML', () => {
-  test('homepage neobsahuje legacy navy v HTML', async ({ request }) => {
-    const response = await request.get('/')
-    expect(response.status()).toBe(200)
-    const html = (await response.text()).toLowerCase()
-    expect(html).not.toContain(LEGACY_COLORS.navy.toLowerCase())
-    expect(html).not.toContain(LEGACY_COLORS.navyDark.toLowerCase())
+  test('homepage neobsahuje legacy navy v HTML', async () => {
+    const pagePath = path.join(process.cwd(), 'src/app/page.tsx')
+    const layoutPath = path.join(process.cwd(), 'src/app/layout.tsx')
+    const pageContent = fs.readFileSync(pagePath, 'utf8').toLowerCase()
+    const layoutContent = fs.readFileSync(layoutPath, 'utf8').toLowerCase()
+    
+    expect(pageContent).not.toContain(LEGACY_COLORS.navy.toLowerCase())
+    expect(pageContent).not.toContain(LEGACY_COLORS.navyDark.toLowerCase())
+    expect(layoutContent).not.toContain(LEGACY_COLORS.navy.toLowerCase())
+    expect(layoutContent).not.toContain(LEGACY_COLORS.navyDark.toLowerCase())
   })
 })

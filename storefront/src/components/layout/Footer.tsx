@@ -45,6 +45,7 @@ export default async function Footer() {
   try {
     const collections = await getNavCollectionItems()
     menuLinks = [
+      { href: '/balicky', label: 'BALÍČKY ZDRAVIA' },
       ...collections.map((item) => ({
         href: item.href,
         label: item.menuLabel,
@@ -52,7 +53,7 @@ export default async function Footer() {
       { href: '/blog', label: 'BLOG' },
     ]
   } catch {
-    // Shopify not configured — footer still renders info links
+    menuLinks = [{ href: '/balicky', label: 'BALÍČKY ZDRAVIA' }]
   }
 
   const footerSections: Record<string, Array<{ href: string; label: string }>> = {

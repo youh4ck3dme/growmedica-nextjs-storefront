@@ -182,7 +182,11 @@ function BUNDLE_CATEGORY_TAG(category: HealthBundle['category']): string {
 const MOCK_BUNDLE_PRODUCTS = getFeaturedBundles(10).map(bundleProductListItem)
 
 const MOCK_PRODUCTS = getNavCategories()
-  .flatMap((category) => [productListItem(category.slug, 1), productListItem(category.slug, 2)])
+  .flatMap((category) => [
+    productListItem(category.slug, 1),
+    productListItem(category.slug, 2),
+    productListItem(category.slug, 3),
+  ])
   .concat(cordycepsProduct())
   .concat(MOCK_BUNDLE_PRODUCTS)
 
@@ -237,6 +241,7 @@ function productsForQuery(query: unknown, first: unknown): ProductListItem[] {
 
 interface MockCartEntry {
   lines: Array<{ id: string; merchandiseId: string; quantity: number }>
+  discountCodes?: string[]
 }
 
 const mockCarts = new Map<string, MockCartEntry>()
@@ -297,7 +302,13 @@ function buildMockCart(cartId: string, entry: MockCartEntry): Cart {
     0,
   )
   const currencyCode = lines[0]?.cost.subtotalAmount.currencyCode ?? 'EUR'
+  const discountCodes = entry.discountCodes ?? []
+  const hasDiscount = discountCodes.some((code) => ['ZĽAVA10', 'DISCOUNT10', 'ZJAVA10', 'ZLAVA10'].includes(code.toUpperCase()))
+  const discountAmount = hasDiscount ? subtotal * 0.1 : 0
+  const total = subtotal - discountAmount
+
   const subtotalAmount = { amount: subtotal.toFixed(2), currencyCode }
+  const totalAmount = { amount: total.toFixed(2), currencyCode }
 
   return {
     id: cartId,
@@ -306,9 +317,13 @@ function buildMockCart(cartId: string, entry: MockCartEntry): Cart {
     lines: connection(lines),
     cost: {
       subtotalAmount,
-      totalAmount: subtotalAmount,
+      totalAmount: totalAmount,
       totalTaxAmount: { amount: '0.00', currencyCode },
     },
+    discountCodes: discountCodes.map((code) => ({
+      code,
+      applicable: true,
+    })),
   }
 }
 
@@ -404,8 +419,30 @@ export function getMockShopifyResponse<T>(query: string, variables: Variables = 
   }
 
   if (query.includes('query GetProducts')) {
+    const limit = typeof variables.first === 'number' ? variables.first : 24
+    const all = productsForQuery(variables.query, MOCK_PRODUCTS.length)
+    let startIndex = 0
+    const after = typeof variables.after === 'string' ? variables.after : null
+    if (after) {
+      const match = /^mock-products-cursor-(\d+)$/.exec(after)
+      if (match) startIndex = Number(match[1])
+    }
+    const slice = all.slice(startIndex, startIndex + limit)
+    const hasNextPage = startIndex + limit < all.length
+    const endCursor = hasNextPage ? `mock-products-cursor-${startIndex + limit}` : null
     return {
-      products: connection(productsForQuery(variables.query, variables.first)),
+      products: {
+        edges: slice.map((node, index) => ({
+          node,
+          cursor: `mock-products-cursor-${startIndex + index + 1}`,
+        })),
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage: startIndex > 0,
+          startCursor: slice.length > 0 ? `mock-products-cursor-${startIndex + 1}` : null,
+          endCursor,
+        },
+      },
     } as T
   }
 
@@ -518,6 +555,28 @@ export function getMockShopifyResponse<T>(query: string, variables: Variables = 
     mockCarts.set(cartId, entry)
     return {
       cartLinesRemove: {
+        cart: buildMockCart(cartId, entry),
+        userErrors: [],
+      },
+    } as T
+  }
+
+  if (query.includes('mutation UpdateCartDiscountCodes')) {
+    const cartId = String(variables.cartId ?? '')
+    const discountCodes = (variables.discountCodes ?? []) as string[]
+    const entry = mockCarts.get(cartId)
+    if (!entry) {
+      return {
+        cartDiscountCodesUpdate: {
+          cart: null,
+          userErrors: [{ field: ['cartId'], message: 'Cart not found' }],
+        },
+      } as T
+    }
+    entry.discountCodes = discountCodes
+    mockCarts.set(cartId, entry)
+    return {
+      cartDiscountCodesUpdate: {
         cart: buildMockCart(cartId, entry),
         userErrors: [],
       },

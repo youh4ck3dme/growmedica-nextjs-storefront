@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge'
 import ProductGallery from '@/components/product/ProductGallery'
 import ProductPurchasePanel from '@/components/product/ProductPurchasePanel'
 import ProductTabs from '@/components/product/ProductTabs'
+import { ProductReviews } from '@/components/product/ProductReviews'
 import { ProductGrid } from '@/components/product/ProductGrid'
 import { ProductFitBox } from '@/components/ai/ProductFitBox'
 import {
@@ -160,6 +161,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           <ProductTabs
             descriptionHtml={p.descriptionHtml || null}
             compositionHtml={compositionHtml}
+          />
+
+          <ProductReviews
+            productHandle={p.handle}
+            productTitle={p.title}
           />
 
           {relatedProducts.length > 0 && (

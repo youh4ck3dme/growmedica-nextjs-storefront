@@ -12,6 +12,12 @@ interface InteractiveCartProps {
 export function InteractiveCart({ initialCart }: InteractiveCartProps) {
   const [cart, setCart] = useState<Cart>(initialCart)
   const [updatingLineId, setUpdatingLineId] = useState<string | null>(null)
+  
+  // Discount states
+  const [discountInput, setDiscountInput] = useState('')
+  const [applyingDiscount, setApplyingDiscount] = useState(false)
+  const [discountError, setDiscountError] = useState<string | null>(null)
+  const [discountSuccess, setDiscountSuccess] = useState<string | null>(null)
 
   const lines = cart.lines.edges.map((e) => e.node) ?? []
 
@@ -57,6 +63,78 @@ export function InteractiveCart({ initialCart }: InteractiveCartProps) {
       setUpdatingLineId(null)
     }
   }
+
+  async function handleApplyDiscount(e: React.FormEvent) {
+    e.preventDefault()
+    const code = discountInput.trim()
+    if (!code) return
+
+    setApplyingDiscount(true)
+    setDiscountError(null)
+    setDiscountSuccess(null)
+
+    try {
+      const res = await fetch('/api/cart/discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ discountCode: code }),
+      })
+
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string }
+        throw new Error(data.error ?? 'Kód sa nepodarilo uplatniť.')
+      }
+
+      const data = (await res.json()) as { cart: Cart; count: number }
+      setCart(data.cart)
+      window.dispatchEvent(new CustomEvent('cart-count-updated', { detail: data.count }))
+
+      const isApplied = data.cart.discountCodes?.some(
+        (dc) => dc.code.toUpperCase() === code.toUpperCase() && dc.applicable
+      )
+      if (isApplied) {
+        setDiscountSuccess('Zľavový kód bol úspešne uplatnený.')
+        setDiscountInput('')
+      } else {
+        setDiscountError('Zadaný zľavový kód nie je platný pre položky v košíku.')
+      }
+    } catch (err) {
+      setDiscountError(err instanceof Error ? err.message : 'Nastala chyba pri uplatnení kódu.')
+    } finally {
+      setApplyingDiscount(false)
+    }
+  }
+
+  async function handleRemoveDiscount(code: string) {
+    setApplyingDiscount(true)
+    setDiscountError(null)
+    setDiscountSuccess(null)
+
+    try {
+      const res = await fetch('/api/cart/discount', {
+        method: 'DELETE',
+      })
+
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string }
+        throw new Error(data.error ?? 'Zľavu sa nepodarilo odstrániť.')
+      }
+
+      const data = (await res.json()) as { cart: Cart; count: number }
+      setCart(data.cart)
+      window.dispatchEvent(new CustomEvent('cart-count-updated', { detail: data.count }))
+      setDiscountSuccess('Zľava bola odstránená.')
+    } catch (err) {
+      setDiscountError(err instanceof Error ? err.message : 'Nastala chyba pri odstraňovaní zľavy.')
+    } finally {
+      setApplyingDiscount(false)
+    }
+  }
+
+  const subtotalVal = parseFloat(cart.cost.subtotalAmount.amount)
+  const totalVal = parseFloat(cart.cost.totalAmount.amount)
+  const discountVal = subtotalVal - totalVal
+  const hasDiscount = discountVal > 0.01
 
   if (lines.length === 0) {
     return (
@@ -180,16 +258,84 @@ export function InteractiveCart({ initialCart }: InteractiveCartProps) {
                 {cart.cost.subtotalAmount.amount} {cart.cost.subtotalAmount.currencyCode}
               </span>
             </div>
+            
+            {hasDiscount && (
+              <div className="flex justify-between text-sm text-(--color-primary) font-semibold">
+                <span>Zľava</span>
+                <span>
+                  -{discountVal.toFixed(2)} {cart.cost.subtotalAmount.currencyCode}
+                </span>
+              </div>
+            )}
+
             <div className="flex justify-between text-sm">
               <span className="text-(--color-text-muted)">Doprava</span>
               <span className="text-(--color-success) font-medium">Vypočíta sa v pokladni</span>
             </div>
           </div>
 
-          <div className="border-t border-(--color-border) pt-4 mb-6">
+          {/* Discount code entry */}
+          <div className="mt-4 pt-4 border-t border-(--color-border)">
+            <form onSubmit={handleApplyDiscount} className="flex gap-2">
+              <input
+                type="text"
+                id="discount-input"
+                value={discountInput}
+                onChange={(e) => setDiscountInput(e.target.value)}
+                placeholder="Zľavový kód"
+                disabled={applyingDiscount}
+                className="flex-1 px-3 py-2 border border-(--color-border) rounded-lg text-sm focus:outline-none focus:border-(--color-primary) disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                id="apply-discount-btn"
+                disabled={applyingDiscount || !discountInput.trim()}
+                className="btn btn-secondary btn-sm px-4"
+              >
+                {applyingDiscount ? '...' : 'Použiť'}
+              </button>
+            </form>
+            {discountError && (
+              <p className="text-xs text-(--color-error) mt-1.5" id="discount-error">{discountError}</p>
+            )}
+            {discountSuccess && (
+              <p className="text-xs text-(--color-primary) mt-1.5" id="discount-success">{discountSuccess}</p>
+            )}
+
+            {cart.discountCodes && cart.discountCodes.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2" id="applied-discounts">
+                {cart.discountCodes.map((dc) => (
+                  <div
+                    key={dc.code}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                      dc.applicable
+                        ? 'bg-(--color-primary-light) text-(--color-primary-dark)'
+                        : 'bg-red-50 text-red-700 border border-red-200'
+                    }`}
+                  >
+                    <span>🏷️ {dc.code}</span>
+                    {dc.applicable && <span className="text-[10px] opacity-75">(Aplikovaný)</span>}
+                    {!dc.applicable && <span className="text-[10px] opacity-75">(Neplatný)</span>}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveDiscount(dc.code)}
+                      disabled={applyingDiscount}
+                      className="hover:text-red-700 transition-colors font-bold ml-1"
+                      id="remove-discount-btn"
+                      aria-label={`Odstrániť kód ${dc.code}`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-(--color-border) pt-4 mt-4 mb-6">
             <div className="flex justify-between font-bold text-(--color-text)">
               <span>Celkom</span>
-              <span>
+              <span id="cart-total-price">
                 {cart.cost.totalAmount.amount} {cart.cost.totalAmount.currencyCode}
               </span>
             </div>

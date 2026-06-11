@@ -76,6 +76,13 @@ export default function CategoryMegaPanel({
         >
           Všetky kolekcie →
         </Link>
+        <Link
+          href="/balicky"
+          className="mega-menu-all-link"
+          onClick={onNavigate}
+        >
+          Balíčky zdravia →
+        </Link>
       </nav>
 
       <div

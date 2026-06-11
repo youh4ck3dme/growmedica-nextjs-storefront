@@ -525,7 +525,7 @@
     transform: scale(1.05);
   }
 
-  .product-card .text-(--color-text-light) {
+  .product-card .text-\(--color-text-light\) {
     color: var(--color-text-muted);
   }
 
@@ -593,7 +593,7 @@
     background: var(--color-primary-light);
     border: 1px solid var(--color-border);
     border-radius: 9999px;
-    color: var(--color-text-muted);
+    color: var(--color-text);
     font-size: 0.9375rem;
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   }

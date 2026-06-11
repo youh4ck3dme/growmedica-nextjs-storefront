@@ -6,6 +6,7 @@ import { Price } from '@/components/ui/Price'
 import VariantSelector from '@/components/product/VariantSelector'
 import AddToCartButton from '@/components/product/AddToCartButton'
 import StickyAddToCartBar from '@/components/product/StickyAddToCartBar'
+import { WishlistButton } from '@/components/product/WishlistButton'
 
 interface ProductPurchasePanelProps {
   product: Product
@@ -27,11 +28,21 @@ export default function ProductPurchasePanel({ product }: ProductPurchasePanelPr
       <div id="product-buy-box" className="space-y-6">
         <Price price={price} compareAtPrice={compareAt} size="lg" />
         <VariantSelector product={product} onVariantChange={setSelectedVariant} />
-        <AddToCartButton
-          variants={product.variants.edges.map((e) => e.node)}
-          availableForSale={product.availableForSale}
-          selectedVariantId={displayVariant?.id}
-        />
+        <div className="flex gap-3 items-start">
+          <div className="flex-1">
+            <AddToCartButton
+              variants={product.variants.edges.map((e) => e.node)}
+              availableForSale={product.availableForSale}
+              selectedVariantId={displayVariant?.id}
+            />
+          </div>
+          <WishlistButton
+            productHandle={product.handle}
+            productTitle={product.title}
+            variant="full"
+            className="shrink-0 h-[48px]"
+          />
+        </div>
         <ul className="space-y-2">
           {[
             '✓ Overená kvalita a prehľadné zloženie',

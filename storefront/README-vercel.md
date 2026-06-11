@@ -120,7 +120,7 @@ Nikdy necommituj reálne hodnoty. V chatoch/logoch reportuj len **PRESENT / MISS
 ### Povinné premenné
 
 ```env
-SHOPIFY_STORE_DOMAIN=          # musí končiť .myshopify.com
+SHOPIFY_STORE_DOMAIN=          # musí končiť .myshopify.com — production: growmedica.myshopify.com
 SHOPIFY_STOREFRONT_ACCESS_TOKEN=   # Storefront API token, NIE Admin shpat_
 SHOPIFY_REVALIDATION_SECRET=    # min. 16 znakov, custom string, nie shpat_
 SHOPIFY_API_VERSION=2025-01
@@ -136,7 +136,7 @@ Validácia: `storefront/src/lib/env.ts`.
 | Premenná | Production | Preview | Development (local pull) |
 |----------|------------|---------|--------------------------|
 | `SHOPIFY_*` | rovnaké | rovnaké | rovnaké |
-| `NEXT_PUBLIC_SITE_URL` | `https://growmedicanextjs.vercel.app` | `https://growmedicanextjs.vercel.app` | `http://localhost:5555` |
+| `NEXT_PUBLIC_SITE_URL` | `https://growmedica.nexify-studio.tech` | `https://growmedica.nexify-studio.tech` | `http://localhost:5555` |
 
 ### Preview — globálne vs. branch-scoped
 
@@ -292,7 +292,7 @@ Očakávané: `401` (zlý secret) alebo `200` (platný secret). `302` z Apache =
 
 ### Aktuálna smoke diagnostika
 
-Posledná diagnostika (2026-06-08) kontrolovala:
+Posledná diagnostika (2026-06-11) kontrolovala:
 
 - `/`, `/kolekcie`, `/kolekcie/vitaminy-mineraly`, `/produkty`, `/vyhladavanie?q=vitamin`, `/kontakt`
 - header, footer, homepage hero
@@ -302,12 +302,13 @@ Posledná diagnostika (2026-06-08) kontrolovala:
 - hero banner na detaile kolekcie
 - produktový grid
 - browser page errors
+- B2B Prediction Panel (Admin)
 
 Výsledky:
 
 ```text
 PR branch smoke: 18/18 PASS
-Production smoke pred merge/deploy PR #14: 17/18 PASS
+B2B Prediction Panel (Admin): PASS
 ```
 
 Produkčný fail bol očakávaný: produkcia ešte nemala nové popisy kolekcií z PR #14.

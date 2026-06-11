@@ -160,3 +160,40 @@ export function getOrganizationJsonLd() {
     slogan: BRAND_COPY.heroSubtitleShort,
   }
 }
+
+export function getBundlesPageMetadata(): Metadata {
+  const title = BRAND_COPY.bundlesHeading
+  const description = BRAND_COPY.pageDescriptions.bundles
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      url: `${SITE_URL}/balicky`,
+    },
+    alternates: {
+      canonical: `${SITE_URL}/balicky`,
+    },
+  }
+}
+
+export function getBundleCatalogItemListJsonLd(
+  bundles: ReadonlyArray<{ name: string; slug: string }>,
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: BRAND_COPY.bundlesHeading,
+    description: BRAND_COPY.pageDescriptions.bundles,
+    numberOfItems: bundles.length,
+    itemListElement: bundles.map((bundle, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: bundle.name,
+      url: `${SITE_URL}/balicky#${bundle.slug}`,
+    })),
+  }
+}

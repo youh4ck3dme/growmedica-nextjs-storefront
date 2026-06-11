@@ -35,3 +35,5 @@ storefront/docs/FIREBASE_AGENT_BLUEPRINT.secrets.env
 storefront/docs/FIREBASE_AGENT_BLUEPRINT.local.md
 storefront/docs/SHOPIFY_WEBHOOK_SETUP.md
 storefront/docs/SHOPIFY_WEBHOOK_SETUP.local.md
+supa.md
+.pnpm-store/

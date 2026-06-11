@@ -79,6 +79,8 @@ export const BRAND_COPY = {
     search: 'Vyhľadajte biomedicínske supplementy v GrowMedica.sk.',
     collections:
       'Prehliadajte kategórie produktov. Vyberte si biomedicínske supplementy podľa vašich potrieb.',
+    bundles:
+      'Balíčky zdravia GrowMedica.sk — overené kombinácie doplnkov pre imunitu, spánok, šport, krásu a ďalšie ciele za zvýhodnené ceny.',
     cart: 'Nákupný košík s vybranými biomedicínskymi supplementmi.',
     contact:
       'Kontaktujte nás — GrowMedica s.r.o., BELLOVA 6, KOŠICE. E-mail: info@growmedica.sk',

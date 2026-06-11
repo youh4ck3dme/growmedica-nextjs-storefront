@@ -295,17 +295,18 @@ See [PWA Setup Guide](./storefront/docs/PWA_SETUP.md) for testing & troubleshoot
 
 ## 🩺 Latest Diagnostics
 
-**Date:** June 8, 2026
+**Date:** June 11, 2026
 
 | Check | Result |
 |-------|--------|
 | `yarn type-check` | PASS |
-| `yarn test:integrity` | PASS — 67/67 |
+| `yarn test:integrity` | PASS — 134/134 |
 | `SHOPIFY_MOCK_MODE=1 ... yarn build` | PASS |
 | Smoke test on current PR branch | PASS — 18/18 |
 | Production smoke before PR #14 merge | 17/18 — production still missing new collection descriptions |
 | Vercel PR check | PASS |
 | GitGuardian check | PASS |
+| B2B Prediction Panel (Admin) | PASS |
 
 Smoke coverage:
 - `/`, `/kolekcie`, `/kolekcie/vitaminy-mineraly`, `/produkty`, `/vyhladavanie?q=vitamin`, `/kontakt`
@@ -426,4 +427,4 @@ Proprietary — GrowMedica.sk
 
 ---
 
-**Last updated**: June 8, 2026 (collection banners, descriptions, integrity diagnostics)
+**Last updated**: June 11, 2026 (B2B predictive insolvency panel, test suite sync, integrity diagnostics)

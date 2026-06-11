@@ -11,6 +11,7 @@ import { ThemeSearch } from '@/components/ui/ThemeSearch'
 import { useStorefrontTheme } from '@/components/theme/StorefrontThemeProvider'
 import { PRIMARY_NAV_LINKS } from '@/lib/navigation/primary-nav'
 import { shouldHideThemeSwitcher } from '@/lib/theme/storefront-theme'
+import { Heart, User } from 'lucide-react'
 
 interface HeaderProps {
   megaMenuCategories?: MegaMenuCategory[]
@@ -20,6 +21,8 @@ export default function Header({ megaMenuCategories = [] }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
   const [scrolled, setScrolled] = useState(false)
+
+  const [wishlistCount, setWishlistCount] = useState(0)
 
   const categoryLinks = megaMenuCategories.map((c) => ({
     href: c.href,
@@ -40,10 +43,26 @@ export default function Header({ megaMenuCategories = [] }: HeaderProps) {
     }
     fetchCartCount()
 
+    // Load initial wishlist count
+    try {
+      const stored = localStorage.getItem('gm_wishlist')
+      if (stored) {
+        setWishlistCount((JSON.parse(stored) as string[]).length)
+      }
+    } catch {
+      /* silent */
+    }
+
     function handleCartCountUpdate(e: Event) {
       setCartCount((e as CustomEvent<number>).detail)
     }
     window.addEventListener('cart-count-updated', handleCartCountUpdate)
+
+    function handleWishlistUpdate(e: Event) {
+      const wishlist = (e as CustomEvent<string[]>).detail
+      if (wishlist) setWishlistCount(wishlist.length)
+    }
+    window.addEventListener('wishlist-updated', handleWishlistUpdate)
 
     function handleScroll() {
       setScrolled(window.scrollY > 8)
@@ -52,6 +71,7 @@ export default function Header({ megaMenuCategories = [] }: HeaderProps) {
 
     return () => {
       window.removeEventListener('cart-count-updated', handleCartCountUpdate)
+      window.removeEventListener('wishlist-updated', handleWishlistUpdate)
       window.removeEventListener('scroll', handleScroll)
     }
   }, [])
@@ -121,6 +141,34 @@ export default function Header({ megaMenuCategories = [] }: HeaderProps) {
               <ThemeSearch
                 className={`${searchButtonClass}${theme === 'noor' ? '' : ' lg:hidden'}`}
               />
+
+              {/* Wishlist Link */}
+              <Link
+                href="/oblubene"
+                id="wishlist-button"
+                className="p-2 text-(--color-text-muted) hover:text-(--color-primary) transition-colors rounded-lg relative"
+                aria-label={`Obľúbené produkty${wishlistCount > 0 ? `, ${wishlistCount} položiek` : ''}`}
+              >
+                <Heart className="h-5 w-5" />
+                {wishlistCount > 0 && (
+                  <span
+                    className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] font-bold text-white bg-red-500"
+                    aria-hidden="true"
+                  >
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Profile/Customer Zone Link */}
+              <Link
+                href="/profil"
+                id="profile-button"
+                className="p-2 text-(--color-text-muted) hover:text-(--color-primary) transition-colors rounded-lg"
+                aria-label="Klientska zóna"
+              >
+                <User className="h-5 w-5" />
+              </Link>
 
               <Link
                 href="/kosik"

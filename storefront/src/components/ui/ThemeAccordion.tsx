@@ -1,6 +1,5 @@
 'use client'
 
-import type { ReactNode } from 'react'
 import { useStorefrontTheme } from '@/components/theme/StorefrontThemeProvider'
 import { Accordion, type AccordionItem } from '@/components/noor/ui/Accordion'
 

@@ -36,6 +36,8 @@ yarn dev
 
 Otvorte `http://localhost:5555/dashboard`.
 
+**CSP `frame-ancestors`:** Nexus musí povoliť origin storefrontu (`http://localhost:5555`, prípadne `http://127.0.0.1:5555`). Tieto hodnoty sú v `DEFAULT_FRAME_ANCESTORS` v growmedica-nexus a v `ALLOWED_FRAME_ANCESTORS` na Vercel. Ak iframe stále blokuje prehliadač, buď redeploy Nexus po zmene CSP, alebo spustite Nexus lokálne a nastavte `NEXT_PUBLIC_DASHBOARD_URL=http://localhost:8080/admin` (plne lokálny iframe bez cross-origin embedu).
+
 ## Storefront — implementácia (tento repozitár)
 
 | Súbor | Účel |
@@ -79,14 +81,28 @@ Tieto kroky vykonajte v repozitári **growmedica-nexus**, nie v tomto projekte.
 
 ### 2. Env premenné (Nexus)
 
-Nepridávať do gitu. Typicky:
+Nepridávať do gitu. Názvy musia sedieť s kódom v repozitári (nie `VITE_FIREBASE_*` — Firebase config ide cez server fn `getFirebaseConfig`):
 
-| Premenná | Účel |
-|---|---|
-| Supabase URL + keys | DB a auth |
-| Firebase config | Admin auth (`verifyAdminAccess`) |
-| `FIREBASE_SERVICE_ACCOUNT_JSON` | Server-side Firebase admin verify |
-| `ALLOWED_FRAME_ANCESTORS` | Flexibilita pre preview/production domény |
+| Premenná | Povinné | Účel |
+|---|---|---|
+| `ADMIN_EMAILS` | áno | Comma-separated zoznam admin e-mailov pre `verifyAdminAccess` (Firebase login nestačí — e-mail musí byť v zozname) |
+| `FIREBASE_API_KEY` | áno | Firebase client config (server fn, nie `VITE_`) |
+| `FIREBASE_AUTH_DOMAIN` | áno | Firebase auth domain |
+| `FIREBASE_PROJECT_ID` | áno | Firebase project ID + JWT verify audience |
+| `FIREBASE_APP_ID` | áno | Firebase app ID |
+| `SUPABASE_URL` | áno | Supabase project URL |
+| `SUPABASE_PUBLISHABLE_KEY` | áno | Supabase anon/publishable key (server + client) |
+| `SUPABASE_SERVICE_ROLE_KEY` | áno | Server-side admin operácie (integrations, webhooks) |
+| `VITE_SUPABASE_URL` | odporúčané | Client-side Supabase (build-time); môže byť rovnaké ako `SUPABASE_URL` |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | odporúčané | Client-side Supabase; môže byť rovnaké ako `SUPABASE_PUBLISHABLE_KEY` |
+| `SHOPIFY_STORE_DOMAIN` | áno | Shopify store pre admin integrácie |
+| `SHOPIFY_ADMIN_ACCESS_TOKEN` | áno | Shopify Admin API token |
+| `SHOPIFY_STOREFRONT_ACCESS_TOKEN` | voliteľné | Storefront API testy z admin panelu |
+| `SHOPIFY_API_VERSION` | voliteľné | Default `2025-01` |
+| `ALLOWED_FRAME_ANCESTORS` | odporúčané | Extra `frame-ancestors` domény (bez `'self'`) |
+| `MISTRAL_API_KEY` | nie (fáza 3) | Zatiaľ nepoužívané v kóde |
+
+> **Poznámka:** `FIREBASE_SERVICE_ACCOUNT_JSON` v tomto repozitári **nie je** potrebné — server-side verify používa Firebase JWKS (`jose`), nie service account.
 
 ### 3. Firebase Authorized domains (manuálne v Firebase Console)
 
@@ -100,6 +116,7 @@ Pridajte všetky tieto domény:
 | `growmedicanextjs.vercel.app` | Storefront Vercel preview/production |
 | `growmedica.sk` | Storefront produkčná doména |
 | `grow.nexify-studio.tech` | Storefront staging / alternatívna doména |
+| `growmedica.nexify-studio.tech` | Storefront produkčná doména (katalóg `/produkty`) |
 
 Bez toho môže Firebase login v iframe zlyhať (fáza 1 obmedzenie — third-party cookies).
 
@@ -107,35 +124,28 @@ Bez toho môže Firebase login v iframe zlyhať (fáza 1 obmedzenie — third-pa
 
 Nexus musí dovoliť, aby ho storefront vložil do iframe. Inak prehliadač zablokuje obsah (`X-Frame-Options` / CSP `frame-ancestors`).
 
-V nexus projekte (`vercel.json` headers alebo server middleware):
+Implementované v nexus repozitári:
 
-```json
-{
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://growmedicanextjs.vercel.app https://growmedica.sk https://*.growmedica.sk https://*.vercel.app https://grow.nexify-studio.tech"
-        }
-      ]
-    }
-  ]
-}
+- `src/lib/frame-ancestors.server.ts` — CSP `frame-ancestors` + odstránenie `X-Frame-Options`
+- `src/server.ts` — aplikuje hlavičky na každú odpoveď
+- `vite.config.ts` — `nitro.preset: "vercel"` pre `.vercel/output` deploy
+
+Produkčná hodnota `ALLOWED_FRAME_ANCESTORS` (bez `'self'`, ten sa pridáva automaticky):
+
+```
+https://growmedicanextjs.vercel.app https://growmedica.sk https://*.growmedica.sk https://grow.nexify-studio.tech https://growmedica.nexify-studio.tech https://*.vercel.app http://localhost:5555 http://127.0.0.1:5555 http://localhost:8080 http://127.0.0.1:8080
+```
+
+Výsledná CSP hlavička (vrátane lokálneho storefrontu):
+
+```
+frame-ancestors 'self' https://growmedicanextjs.vercel.app https://growmedica.sk https://*.growmedica.sk https://grow.nexify-studio.tech https://growmedica.nexify-studio.tech https://*.vercel.app http://localhost:5555 http://127.0.0.1:5555 http://localhost:8080 http://127.0.0.1:8080
 ```
 
 Odporúčania:
 
-- **Odstrániť / neposielať** `X-Frame-Options: DENY` na admin routách
-- Použiť env `ALLOWED_FRAME_ANCESTORS` pre flexibilitu medzi preview/production
-- Rozšíriť `frame-ancestors` o všetky produkčné a preview domény storefrontu
-
-Príklad s env (v build/deploy skripte alebo middleware):
-
-```
-frame-ancestors 'self' ${ALLOWED_FRAME_ANCESTORS}
-```
+- **Odstrániť / neposielať** `X-Frame-Options: DENY` na admin routách (rieši `applyIframeEmbedHeaders`)
+- Po pridaní novej storefront domény aktualizovať `ALLOWED_FRAME_ANCESTORS` vo Vercel projekte `growmedica-nexus` a redeploy
 
 ### 5. Iframe URL mapping
 
@@ -146,6 +156,15 @@ NEXT_PUBLIC_DASHBOARD_URL = https://<nexus-host>/admin
 ```
 
 Vnútorná navigácia (`/admin/produkty`, `/admin/prihlasenie`, …) zostáva v iframe — parent URL `/dashboard` sa nemení.
+
+## Nasadené URL (2026-06-09)
+
+| Služba | URL |
+|---|---|
+| **growmedica-nexus** (admin iframe) | https://growmedica-nexus.vercel.app/admin |
+| **growmedicanextjs** (storefront bridge) | https://growmedicanextjs.vercel.app/dashboard |
+
+Vercel projekty: `h4ck3d/growmedica-nexus`, `h4ck3d/growmedicanextjs`.
 
 ## Odporúčaný postup nasadenia
 
@@ -175,7 +194,7 @@ Posledná kontrola (pred prvým Nexus deployom): `DEPLOYMENT_NOT_FOUND` — treb
 
 - **Auth cookies** — Supabase/Firebase session beží v kontexte Nexus origin (third-party cookie v iframe). Prihlásenie môže v Safari/Firefox zlyhať v iframe skôr než v priamom okne. Riešenie vo fáze 2 (same-origin proxy alebo shared auth).
 - **Firebase Authorized domains** — okrem Nexus hostu pridajte aj storefront domény; inak Firebase popup/redirect auth v iframe zlyhá.
-- **`FIREBASE_SERVICE_ACCOUNT_JSON`** — na Nexuse pre server-side `verifyAdminAccess`; bez nej admin API môže vracať 403 aj po úspešnom klientskom logine.
+- **`FIREBASE_SERVICE_ACCOUNT_JSON`** — v tomto repozitári nie je potrebné (verify cez JWKS). Ak máte starší checklist s touto premennou, ignorujte ju.
 - **Deep linking** — `growmedica.sk/dashboard/admin/produkty` nebude fungovať; deep linky sú len vnútri iframe.
 - **Serwist SW** — service worker sa registruje globálne, ale `/dashboard` nemá shop chrome a iframe route by nemala byť blokovaná. Po production deployi overte: DevTools → Application → Service Workers, potom načítajte `/dashboard` a skontrolujte, že iframe sa renderuje (SW neinterceptuje cross-origin iframe obsah).
 

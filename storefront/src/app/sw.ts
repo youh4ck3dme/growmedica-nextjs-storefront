@@ -50,7 +50,7 @@ const serwist = new Serwist({
       handler: new NetworkOnly(),
     },
     {
-      matcher: ({ url }) => url.pathname.startsWith('/api/'),
+      matcher: ({ url, request }) => url.pathname.startsWith('/api/') && request.method === 'GET',
       handler: new NetworkOnly(),
     },
     ...filteredDefaultCache,

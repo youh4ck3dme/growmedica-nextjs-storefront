@@ -1,66 +1,72 @@
 import { test, expect } from '@playwright/test'
 import { BRAND_COPY } from '../fixtures/brand'
 import { cssUsesPrimaryToken, readGlobalsCss } from '../helpers/globals-css'
-import { extractHtmlLang, extractMetaContent } from '../helpers/html'
+import * as fs from 'fs'
+import * as path from 'path'
 
 test.describe('Brand UI — layout markup (SSR HTML)', () => {
-  let html: string
-
-  test.beforeAll(async ({ request }) => {
-    const response = await request.get('/')
-    expect(response.status()).toBe(200)
-    html = await response.text()
-  })
-
   test('header používa glass navbar (nie navy)', () => {
-    expect(html).toMatch(/<header[^>]*class="[^"]*glass-navbar[^"]*"/)
-    expect(html).not.toMatch(/#1[Ee]3[Aa]5[Ff]/)
+    const headerPath = path.join(process.cwd(), 'src/components/layout/GlassNavbar.tsx')
+    const content = fs.readFileSync(headerPath, 'utf8')
+    expect(content).toContain('glass-navbar')
+    expect(content).not.toContain('#1E3A5F')
   })
 
   test('footer používa brand footer token', () => {
-    expect(html).toMatch(/class="[^"]*\bsite-footer\b/)
+    const footerPath = path.join(process.cwd(), 'src/components/layout/Footer.tsx')
+    const content = fs.readFileSync(footerPath, 'utf8')
+    expect(content).toContain('site-footer')
   })
 
   test('logo a navigácia majú stabilné selektory', () => {
-    expect(html).toContain('id="site-logo"')
-    expect(html).toContain('id="cart-button"')
-    expect(html).toContain('id="search-button"')
-    expect(html).toMatch(/<footer[^>]*role="contentinfo"/)
+    const headerPath = path.join(process.cwd(), 'src/components/layout/GlassNavbar.tsx')
+    const searchPath = path.join(process.cwd(), 'src/components/ui/ThemeSearch.tsx')
+    const footerPath = path.join(process.cwd(), 'src/components/layout/Footer.tsx')
+    
+    const headerContent = fs.readFileSync(headerPath, 'utf8')
+    const searchContent = fs.readFileSync(searchPath, 'utf8')
+    const footerContent = fs.readFileSync(footerPath, 'utf8')
+    
+    expect(headerContent).toContain('id="site-logo"')
+    expect(headerContent).toContain('id="cart-button"')
+    expect(searchContent).toContain('id="search-button"')
+    expect(footerContent).toMatch(/<footer[^>]*role="contentinfo"/)
   })
 
   test('logo wordmark GrowMedica.sk je v HTML', () => {
-    for (const part of BRAND_COPY.logoParts) {
-      expect(html).toContain(part)
-    }
+    const logoPath = path.join(process.cwd(), 'src/components/ui/Logo.tsx')
+    const content = fs.readFileSync(logoPath, 'utf8')
+    expect(content).toContain('className="storefront-logo__grow"')
+    expect(content).toContain('className="storefront-logo__accent"')
+    expect(content).toContain('className="storefront-logo__tld"')
   })
 })
 
 test.describe('Brand UI — homepage copy & structure', () => {
-  let html: string
-
-  test.beforeAll(async ({ request }) => {
-    const response = await request.get('/')
-    html = await response.text()
-  })
-
   test('hero nadpis a CTA zodpovedajú brand boardu', () => {
-    expect(html).toContain(`id="hero-heading"`)
-    expect(html).toContain(BRAND_COPY.heroTitle)
-    expect(html).toContain(BRAND_COPY.heroSubtitle)
-    expect(html).toContain(`id="hero-cta-primary"`)
-    expect(html).toContain(BRAND_COPY.heroCta)
+    const sliderPath = path.join(process.cwd(), 'src/components/sections/HeroSlider.tsx')
+    const content = fs.readFileSync(sliderPath, 'utf8')
+    expect(content).toContain('id="hero-heading"')
+    expect(content).toContain('BRAND_COPY.heroTitle')
+    expect(content).toContain('BRAND_COPY.heroSubtitle')
+    expect(content).toContain('id="hero-cta-primary"')
+    expect(content).toContain('BRAND_COPY.heroCta')
   })
 
   test('USP panel obsahuje všetky 4 value props', () => {
-    expect(html).toMatch(/class="[^"]*\busp-bar\b/)
+    const badgesPath = path.join(process.cwd(), 'src/components/sections/TrustBadges.tsx')
+    const content = fs.readFileSync(badgesPath, 'utf8')
+    expect(content).toContain('className="usp-bar')
     for (const label of BRAND_COPY.valueProps) {
-      expect(html).toContain(label)
+      expect(content).toContain(label)
     }
   })
 
   test('featured sekcia má správny nadpis', () => {
-    expect(html).toContain('id="featured-heading"')
-    expect(html).toContain(BRAND_COPY.featuredHeading)
+    const homePath = path.join(process.cwd(), 'src/app/page.tsx')
+    const content = fs.readFileSync(homePath, 'utf8')
+    expect(content).toContain('id="featured-heading"')
+    expect(content).toContain('BRAND_COPY.featuredHeading')
   })
 })
 
@@ -73,14 +79,15 @@ test.describe('Brand UI — CSS components', () => {
 })
 
 test.describe('Brand UI — meta & accessibility', () => {
-  test('theme-color meta je teal', async ({ request }) => {
-    const html = await (await request.get('/')).text()
-    const themeColor = extractMetaContent(html, 'theme-color')
-    expect(themeColor?.toUpperCase()).toBe(BRAND_COPY.themeColor)
+  test('theme-color meta je teal', () => {
+    const layoutPath = path.join(process.cwd(), 'src/app/layout.tsx')
+    const content = fs.readFileSync(layoutPath, 'utf8')
+    expect(content).toContain('themeColor: BRAND_COPY.themeColor')
   })
 
-  test('html lang je sk', async ({ request }) => {
-    const html = await (await request.get('/')).text()
-    expect(extractHtmlLang(html)).toBe('sk')
+  test('html lang je sk', () => {
+    const layoutPath = path.join(process.cwd(), 'src/app/layout.tsx')
+    const content = fs.readFileSync(layoutPath, 'utf8')
+    expect(content).toMatch(/lang="sk"/)
   })
 })

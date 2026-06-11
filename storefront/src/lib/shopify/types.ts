@@ -152,6 +152,11 @@ export interface CartLine {
   }
 }
 
+export interface DiscountCode {
+  code: string
+  applicable: boolean
+}
+
 export interface Cart {
   id: string
   checkoutUrl: string
@@ -166,6 +171,7 @@ export interface Cart {
     totalAmount: Money
     totalTaxAmount: Money | null
   }
+  discountCodes?: DiscountCode[]
 }
 
 // ─── GraphQL Response ─────────────────────────────────────────────────────────

@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Container } from '@/components/ui/Container'
-import { useStorefrontTheme } from '@/components/theme/StorefrontThemeProvider'
 import { BRAND_COPY } from '@/lib/brand'
 import {
   HERO_IMAGE_SIZES,
@@ -41,8 +40,7 @@ const FALLBACK_SLIDES: HeroSlide[] = [
 ]
 
 export function HeroSlider({ slides }: HeroSliderProps) {
-  const { theme } = useStorefrontTheme()
-  const useHeroVideo = theme === 'noor'
+  const useHeroVideo = true
   const items = slides.length > 0 ? slides : FALLBACK_SLIDES
   const [index, setIndex] = useState(0)
   const reduceMotion = useReducedMotion()

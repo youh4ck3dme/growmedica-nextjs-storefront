@@ -39,6 +39,48 @@ export async function getProducts(options: GetProductsOptions = {}) {
   return data.products
 }
 
+const PRODUCTS_PAGE_SIZE = 48
+
+/** Fetch pages 1…`pages` and merge edges (for “load more” / ?stranka=N). */
+export async function getProductsAccumulated(
+  options: GetProductsOptions & { pages?: number } = {},
+) {
+  const pageSize = options.first ?? PRODUCTS_PAGE_SIZE
+  const pages = Math.max(1, options.pages ?? 1)
+  const { query, sortKey = 'BEST_SELLING', reverse = false } = options
+
+  const mergedEdges: Connection<ProductListItem>['edges'] = []
+  let after = options.after
+  let pageInfo: Connection<ProductListItem>['pageInfo'] = {
+    hasNextPage: false,
+    hasPreviousPage: false,
+    startCursor: null,
+    endCursor: null,
+  }
+
+  for (let page = 1; page <= pages; page++) {
+    const batch = await getProducts({
+      first: pageSize,
+      after,
+      query,
+      sortKey,
+      reverse,
+    })
+    mergedEdges.push(...batch.edges)
+    pageInfo = batch.pageInfo
+    if (!batch.pageInfo.hasNextPage) break
+    after = batch.pageInfo.endCursor ?? undefined
+  }
+
+  return {
+    edges: mergedEdges,
+    pageInfo,
+    pageSize,
+  }
+}
+
+export { PRODUCTS_PAGE_SIZE }
+
 export async function getProductByHandle(handle: string) {
   const data = await shopifyFetch<{ product: Product | null }>({
     query: GET_PRODUCT_BY_HANDLE_QUERY,
