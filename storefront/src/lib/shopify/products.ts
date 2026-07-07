@@ -22,6 +22,8 @@ interface GetProductsOptions {
   reverse?: boolean
 }
 
+type ProductsAccumulationPages = number | 'all'
+
 // ─── Product Fetching ─────────────────────────────────────────────────────────
 
 export async function getProducts(options: GetProductsOptions = {}) {
@@ -43,10 +45,11 @@ const PRODUCTS_PAGE_SIZE = 48
 
 /** Fetch pages 1…`pages` and merge edges (for “load more” / ?stranka=N). */
 export async function getProductsAccumulated(
-  options: GetProductsOptions & { pages?: number } = {},
+  options: GetProductsOptions & { pages?: ProductsAccumulationPages } = {},
 ) {
   const pageSize = options.first ?? PRODUCTS_PAGE_SIZE
-  const pages = Math.max(1, options.pages ?? 1)
+  const pages =
+    options.pages === 'all' ? Number.POSITIVE_INFINITY : Math.max(1, options.pages ?? 1)
   const { query, sortKey = 'BEST_SELLING', reverse = false } = options
 
   const mergedEdges: Connection<ProductListItem>['edges'] = []
@@ -68,8 +71,9 @@ export async function getProductsAccumulated(
     })
     mergedEdges.push(...batch.edges)
     pageInfo = batch.pageInfo
-    if (!batch.pageInfo.hasNextPage) break
-    after = batch.pageInfo.endCursor ?? undefined
+    const nextCursor = batch.pageInfo.endCursor ?? undefined
+    if (!batch.pageInfo.hasNextPage || !nextCursor || nextCursor === after) break
+    after = nextCursor
   }
 
   return {
