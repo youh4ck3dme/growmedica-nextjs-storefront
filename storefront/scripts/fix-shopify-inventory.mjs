@@ -12,9 +12,9 @@
  * Usage:
  *   node scripts/fix-shopify-inventory.mjs --dry-run
  *   node scripts/fix-shopify-inventory.mjs
- *   node scripts/fix-shopify-inventory.mjs --quantity=100
- *   node scripts/fix-shopify-inventory.mjs --handle=mycomedica-bio-coriolus-100-g
- *   node scripts/fix-shopify-inventory.mjs --strategy=untracked
+ *   node scripts/fix-shopify-inventory.mjs --apply --quantity=100
+ *   node scripts/fix-shopify-inventory.mjs --apply --handle=mycomedica-bio-coriolus-100-g
+ *   node scripts/fix-shopify-inventory.mjs --apply --strategy=untracked
  *   node scripts/fix-shopify-inventory.mjs --limit=5
  *
  * Strategies:
@@ -36,7 +36,8 @@ import {
 loadEnvLocal()
 
 const config = getShopifyAdminConfig()
-const dryRun = parseArgFlag('--dry-run')
+const apply = parseArgFlag('--apply')
+const dryRun = !apply || parseArgFlag('--dry-run')
 const force = parseArgFlag('--force')
 const quantity = Math.max(1, Number(parseArgValue('--quantity', '100')) || 100)
 const limit = parseArgValue('--limit', null) ? Number(parseArgValue('--limit', '0')) : null

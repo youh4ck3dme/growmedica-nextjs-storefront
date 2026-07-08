@@ -30,7 +30,7 @@ export default async function ProduktyPage({ searchParams }: ProductsPageProps) 
   try {
     const productData = await getProductsAccumulated({
       first: 250,
-      pages: 1,
+      pages: 'all',
       query,
     })
     products = productData.edges.map((e) => e.node)
