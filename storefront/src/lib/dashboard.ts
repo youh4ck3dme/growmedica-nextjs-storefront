@@ -24,6 +24,12 @@ export function getDashboardOrigin(): string | undefined {
   }
 }
 
+/** CSP frame-src value for the dashboard iframe target. */
+export function getDashboardFrameSrcDirective(): string {
+  const origin = getDashboardOrigin()
+  return origin ? `'self' ${origin}` : "'self'"
+}
+
 export const DASHBOARD_ROUTE_HEADER = 'x-dashboard-route'
 
 export function isDashboardRouteHeader(value: string | null): boolean {

@@ -3,11 +3,36 @@ import path from 'node:path'
 import { test, expect } from '@playwright/test'
 import robots from '../../src/app/robots'
 import { metadata } from '../../src/app/dashboard/layout'
+import {
+  getDashboardFrameSrcDirective,
+  getDashboardOrigin,
+  getDashboardUrl,
+} from '../../src/lib/dashboard'
 
 const REPO_ROOT = path.resolve(__dirname, '../../..')
 const DASHBOARD_PAGE_PATH = path.join(REPO_ROOT, 'storefront/src/app/dashboard/page.tsx')
 const ROOT_LAYOUT_PATH = path.join(REPO_ROOT, 'storefront/src/app/layout.tsx')
 const MIDDLEWARE_PATH = path.join(REPO_ROOT, 'storefront/src/middleware.ts')
+const LOVABLE_DASHBOARD_URL = 'https://growmedica-nexus.lovable.app/admin'
+
+function withDashboardUrl<T>(value: string | undefined, callback: () => T): T {
+  const previous = process.env.NEXT_PUBLIC_DASHBOARD_URL
+  if (value === undefined) {
+    delete process.env.NEXT_PUBLIC_DASHBOARD_URL
+  } else {
+    process.env.NEXT_PUBLIC_DASHBOARD_URL = value
+  }
+
+  try {
+    return callback()
+  } finally {
+    if (previous === undefined) {
+      delete process.env.NEXT_PUBLIC_DASHBOARD_URL
+    } else {
+      process.env.NEXT_PUBLIC_DASHBOARD_URL = previous
+    }
+  }
+}
 
 test.describe('Dashboard route — smoke', () => {
   test('returns 200', () => {
@@ -71,6 +96,34 @@ test.describe('Dashboard route — smoke', () => {
   test('contains meta title and robot policies', () => {
     expect(metadata.title).toBe('Dashboard')
     expect(metadata.robots).toEqual({ index: false, follow: false })
+  })
+})
+
+test.describe('Dashboard URL helpers', () => {
+  test('normalizes the configured Lovable admin URL and derives a frame-src origin', () => {
+    withDashboardUrl(` ${LOVABLE_DASHBOARD_URL} `, () => {
+      expect(getDashboardUrl()).toBe(LOVABLE_DASHBOARD_URL)
+      expect(getDashboardOrigin()).toBe('https://growmedica-nexus.lovable.app')
+      expect(getDashboardFrameSrcDirective()).toBe(
+        "'self' https://growmedica-nexus.lovable.app",
+      )
+    })
+  })
+
+  test('falls back to self-only frame-src when the dashboard URL is missing', () => {
+    withDashboardUrl(undefined, () => {
+      expect(getDashboardUrl()).toBeUndefined()
+      expect(getDashboardOrigin()).toBeUndefined()
+      expect(getDashboardFrameSrcDirective()).toBe("'self'")
+    })
+  })
+
+  test('rejects non-http dashboard URL protocols', () => {
+    withDashboardUrl('javascript:alert(1)', () => {
+      expect(getDashboardUrl()).toBeUndefined()
+      expect(getDashboardOrigin()).toBeUndefined()
+      expect(getDashboardFrameSrcDirective()).toBe("'self'")
+    })
   })
 })
 
