@@ -42,7 +42,7 @@ test.describe('Mock Shopify cart API', () => {
     })
 
     expect(response.status()).toBe(400)
-    await expect(response).toHaveJSON({ error: 'Discount code is required' })
+    await expect(response.json()).resolves.toEqual({ error: 'Discount code is required' })
   })
 
   test('POST /api/cart/discount bez košíka vráti 404', async ({ request }) => {
@@ -51,7 +51,7 @@ test.describe('Mock Shopify cart API', () => {
     })
 
     expect(response.status()).toBe(404)
-    await expect(response).toHaveJSON({ error: 'Cart not found' })
+    await expect(response.json()).resolves.toEqual({ error: 'Cart not found' })
   })
 
   test('POST /api/cart/discount uplatní ZLAVA10 a prepočíta sumu košíka', async ({ request }) => {
