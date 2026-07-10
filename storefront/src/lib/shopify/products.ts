@@ -18,14 +18,26 @@ interface GetProductsOptions {
   first?: number
   after?: string
   query?: string
-  sortKey?: 'TITLE' | 'PRICE' | 'BEST_SELLING' | 'CREATED_AT' | 'UPDATED_AT' | 'RELEVANCE'
+  sortKey?:
+    | 'TITLE'
+    | 'PRICE'
+    | 'BEST_SELLING'
+    | 'CREATED_AT'
+    | 'UPDATED_AT'
+    | 'RELEVANCE'
   reverse?: boolean
 }
 
 // ─── Product Fetching ─────────────────────────────────────────────────────────
 
 export async function getProducts(options: GetProductsOptions = {}) {
-  const { first = 24, after, query, sortKey = 'BEST_SELLING', reverse = false } = options
+  const {
+    first = 24,
+    after,
+    query,
+    sortKey = 'BEST_SELLING',
+    reverse = false,
+  } = options
 
   const data = await shopifyFetch<{
     products: Connection<ProductListItem>
@@ -41,12 +53,16 @@ export async function getProducts(options: GetProductsOptions = {}) {
 
 const PRODUCTS_PAGE_SIZE = 48
 
-/** Fetch pages 1…`pages` and merge edges (for “load more” / ?stranka=N). */
+type ProductsPageCount = number | 'all'
+
+/** Fetch pages 1…`pages` and merge edges, or every available page with `pages: 'all'`. */
 export async function getProductsAccumulated(
-  options: GetProductsOptions & { pages?: number } = {},
+  options: GetProductsOptions & { pages?: ProductsPageCount } = {},
 ) {
   const pageSize = options.first ?? PRODUCTS_PAGE_SIZE
-  const pages = Math.max(1, options.pages ?? 1)
+  const pages = options.pages ?? 1
+  const maxPages =
+    pages === 'all' ? Number.POSITIVE_INFINITY : Math.max(1, pages)
   const { query, sortKey = 'BEST_SELLING', reverse = false } = options
 
   const mergedEdges: Connection<ProductListItem>['edges'] = []
@@ -58,7 +74,7 @@ export async function getProductsAccumulated(
     endCursor: null,
   }
 
-  for (let page = 1; page <= pages; page++) {
+  for (let page = 1; page <= maxPages; page++) {
     const batch = await getProducts({
       first: pageSize,
       after,
@@ -69,7 +85,9 @@ export async function getProductsAccumulated(
     mergedEdges.push(...batch.edges)
     pageInfo = batch.pageInfo
     if (!batch.pageInfo.hasNextPage) break
-    after = batch.pageInfo.endCursor ?? undefined
+    const nextAfter = batch.pageInfo.endCursor ?? undefined
+    if (!nextAfter || nextAfter === after) break
+    after = nextAfter
   }
 
   return {
@@ -105,7 +123,9 @@ export async function getFeaturedProducts(count = 8) {
   return data.products.edges.map((e) => e.node)
 }
 
-export async function getBundleProducts(count = 48): Promise<ProductListItem[]> {
+export async function getBundleProducts(
+  count = 48,
+): Promise<ProductListItem[]> {
   const result = await getProducts({
     first: count,
     query: `tag:'balicek-zdravia'`,
@@ -125,7 +145,10 @@ export async function getAllProductHandlesForSitemap(): Promise<
   while (hasNextPage) {
     const data = await shopifyFetch<{
       products: {
-        edges: Array<{ node: { handle: string; updatedAt: string }; cursor: string }>
+        edges: Array<{
+          node: { handle: string; updatedAt: string }
+          cursor: string
+        }>
         pageInfo: { hasNextPage: boolean; endCursor: string | null }
       }
     }>({
@@ -168,7 +191,10 @@ export function getProductCompositionHtml(product: Product): string | null {
     (f) => f && (f.key === 'composition' || f.key === 'zlozenie'),
   )
   if (!composition?.value) return null
-  if (composition.type === 'multi_line_text_field' || composition.value.includes('<')) {
+  if (
+    composition.type === 'multi_line_text_field' ||
+    composition.value.includes('<')
+  ) {
     return composition.value
   }
   return `<p>${composition.value}</p>`

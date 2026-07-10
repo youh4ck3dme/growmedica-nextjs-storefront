@@ -21,7 +21,9 @@ interface ProductsPageProps {
   searchParams: Promise<SearchParams>
 }
 
-export default async function ProduktyPage({ searchParams }: ProductsPageProps) {
+export default async function ProduktyPage({
+  searchParams,
+}: ProductsPageProps) {
   const params = await searchParams
   const query = params.q?.trim() || undefined
 
@@ -30,7 +32,7 @@ export default async function ProduktyPage({ searchParams }: ProductsPageProps) 
   try {
     const productData = await getProductsAccumulated({
       first: 250,
-      pages: 1,
+      pages: 'all',
       query,
     })
     products = productData.edges.map((e) => e.node)
@@ -46,13 +48,16 @@ export default async function ProduktyPage({ searchParams }: ProductsPageProps) 
             {query ? `Výsledky pre: „${query}“` : 'Katalóg produktov'}
           </h1>
           <p className="text-(--color-text-muted) text-sm">
-            Objavte našu ponuku prémiových biomedicínskych supplementov a produktov pre vaše zdravie.
+            Objavte našu ponuku prémiových biomedicínskych supplementov a
+            produktov pre vaše zdravie.
           </p>
         </div>
 
-        <FilterableProductList initialProducts={products} initialQuery={query} />
+        <FilterableProductList
+          initialProducts={products}
+          initialQuery={query}
+        />
       </Container>
     </div>
   )
 }
-
