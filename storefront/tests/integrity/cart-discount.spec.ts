@@ -36,7 +36,7 @@ async function seedCart(request: APIRequestContext) {
 }
 
 async function cartCookieFrom(response: APIResponse) {
-  const setCookieHeader = await response.headerValue('set-cookie')
+  const setCookieHeader = response.headers()['set-cookie']
   expect(setCookieHeader).toBeTruthy()
 
   const cartCookie = setCookieHeader!.split(';')[0]
