@@ -55,7 +55,6 @@ async function seedBrowserCart(context: BrowserContext) {
     {
       ...cookie,
       url: new URL('/', response.url()).toString(),
-      path: '/',
       httpOnly: true,
       sameSite: 'Strict',
     },
