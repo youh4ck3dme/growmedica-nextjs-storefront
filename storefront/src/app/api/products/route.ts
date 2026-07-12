@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getProductByHandle, getProductsAccumulated } from '@/lib/shopify/products'
+import {
+  getProductByHandle,
+  getProductsAccumulated,
+} from '@/lib/shopify/products'
 
 export async function GET(request: NextRequest) {
   const handlesParam = request.nextUrl.searchParams.get('handles')
@@ -10,8 +13,9 @@ export async function GET(request: NextRequest) {
         .split(',')
         .map((h) => h.trim())
         .filter(Boolean)
-      const products = (await Promise.all(handles.map((handle) => getProductByHandle(handle))))
-        .filter((product) => product !== null)
+      const products = (
+        await Promise.all(handles.map((handle) => getProductByHandle(handle)))
+      ).filter((product) => product !== null)
 
       return NextResponse.json({ products })
     }
@@ -22,6 +26,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ products })
   } catch (error) {
     console.error('[API Products] Error:', error)
-    return NextResponse.json({ error: 'Failed to fetch products', products: [] }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to fetch products', products: [] },
+      { status: 500 },
+    )
   }
 }

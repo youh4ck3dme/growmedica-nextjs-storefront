@@ -4,7 +4,10 @@ import * as path from 'path'
 
 test.describe('Products catalog pagination', () => {
   test('/produkty fetches the full Shopify catalog for client-side filtering', async () => {
-    const productsLibPath = path.join(process.cwd(), 'src/lib/shopify/products.ts')
+    const productsLibPath = path.join(
+      process.cwd(),
+      'src/lib/shopify/products.ts',
+    )
     expect(fs.existsSync(productsLibPath)).toBe(true)
     const libContent = fs.readFileSync(productsLibPath, 'utf8')
     expect(libContent).toContain("pages?: number | 'all'")
@@ -29,13 +32,17 @@ test.describe('Products catalog pagination', () => {
     expect(routeContent).not.toContain('pages: 1')
   })
 
-  test('/api/products handle lookup returns requested mock product', async ({ request }) => {
+  test('/api/products handle lookup returns requested mock product', async ({
+    request,
+  }) => {
     const response = await request.get(
       '/api/products?handles=mycomedica-cordyceps-50-90-rastlinnych-kapsul',
     )
     expect(response.ok()).toBe(true)
 
-    const data = (await response.json()) as { products: Array<{ handle: string }> }
+    const data = (await response.json()) as {
+      products: Array<{ handle: string }>
+    }
     expect(data.products.map((product) => product.handle)).toEqual([
       'mycomedica-cordyceps-50-90-rastlinnych-kapsul',
     ])
