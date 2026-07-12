@@ -9,8 +9,13 @@ test.describe('Mock Shopify cart API', () => {
     const content = fs.readFileSync(routePath, 'utf8')
     expect(content).toContain('existingCartId')
     expect(content).toContain('addToCart')
+    expect(content).toContain('getCart')
     expect(content).toContain('createCart')
     expect(content).toContain('CART_COOKIE')
+    expect(content).toMatch(/catch\s*\(error\)/)
+    expect(content).toContain('const existingCart = await getCart(existingCartId)')
+    expect(content).toContain('if (existingCart)')
+    expect(content).toContain('throw error')
   })
 
   test('pridanie do košíka aktualizuje badge v hlavičke', async () => {

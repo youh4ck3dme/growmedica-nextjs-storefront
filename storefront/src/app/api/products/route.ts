@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getProductsAccumulated } from '@/lib/shopify/products'
+import { getProductByHandle, getProductsAccumulated } from '@/lib/shopify/products'
 
 export async function GET(request: NextRequest) {
   const handlesParam = request.nextUrl.searchParams.get('handles')
-  
-  try {
-    const data = await getProductsAccumulated({ first: 250, pages: 1 })
-    let products = data.edges.map((e) => e.node)
 
+  try {
     if (handlesParam) {
-      const handles = handlesParam.split(',').map((h) => h.trim())
-      products = products.filter((p) => handles.includes(p.handle))
+      const handles = handlesParam
+        .split(',')
+        .map((h) => h.trim())
+        .filter(Boolean)
+      const products = (await Promise.all(handles.map((handle) => getProductByHandle(handle))))
+        .filter((product) => product !== null)
+
+      return NextResponse.json({ products })
     }
+
+    const data = await getProductsAccumulated({ first: 250, pages: 'all' })
+    const products = data.edges.map((e) => e.node)
 
     return NextResponse.json({ products })
   } catch (error) {
