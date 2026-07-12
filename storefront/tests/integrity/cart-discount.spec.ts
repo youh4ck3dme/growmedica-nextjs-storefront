@@ -1,4 +1,10 @@
-import { expect, test, type APIRequestContext, type BrowserContext } from '@playwright/test'
+import {
+  expect,
+  test,
+  type APIRequestContext,
+  type APIResponse,
+  type BrowserContext,
+} from '@playwright/test'
 
 const MOCK_VARIANT_ID = 'gid://shopify/ProductVariant/mock-cordyceps-default'
 const VALID_DISCOUNT_CODE = 'ZLAVA10'
@@ -26,11 +32,35 @@ async function seedCart(request: APIRequestContext) {
 
   const payload = (await response.json()) as CartResponse
   expect(payload.count).toBe(1)
-  return payload.cart
+  return { cart: payload.cart, response }
+}
+
+async function cartCookieFrom(response: APIResponse) {
+  const setCookieHeader = await response.headerValue('set-cookie')
+  expect(setCookieHeader).toBeTruthy()
+
+  const cartCookie = setCookieHeader!.split(';')[0]
+  const separatorIndex = cartCookie.indexOf('=')
+
+  return {
+    name: cartCookie.slice(0, separatorIndex),
+    value: cartCookie.slice(separatorIndex + 1),
+  }
 }
 
 async function seedBrowserCart(context: BrowserContext) {
-  return seedCart(context.request)
+  const { cart, response } = await seedCart(context.request)
+  const cookie = await cartCookieFrom(response)
+  await context.addCookies([
+    {
+      ...cookie,
+      url: new URL('/', response.url()).toString(),
+      path: '/',
+      httpOnly: true,
+      sameSite: 'Strict',
+    },
+  ])
+  return cart
 }
 
 test.describe('Cart discount flow', () => {
@@ -49,7 +79,7 @@ test.describe('Cart discount flow', () => {
   })
 
   test('applies and removes the ZLAVA10 discount through the cart API', async ({ request }) => {
-    const seededCart = await seedCart(request)
+    const { cart: seededCart } = await seedCart(request)
     const subtotal = Number(seededCart.cost.subtotalAmount.amount)
 
     const applyResponse = await request.post('/api/cart/discount', {
