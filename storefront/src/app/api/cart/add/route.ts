@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { createCart, addToCart, CART_COOKIE } from '@/lib/shopify/cart'
+import { createCart, addToCart, getCart, CART_COOKIE } from '@/lib/shopify/cart'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +10,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!variantId) {
-      return NextResponse.json({ error: 'variantId is required' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'variantId is required' },
+        { status: 400 },
+      )
     }
 
     const cookieStore = await cookies()
@@ -19,16 +22,26 @@ export async function POST(request: NextRequest) {
     let cart
     if (existingCartId) {
       try {
-        cart = await addToCart(existingCartId, [{ merchandiseId: variantId, quantity }])
-      } catch {
-        // Cart expired — create new one
+        cart = await addToCart(existingCartId, [
+          { merchandiseId: variantId, quantity },
+        ])
+      } catch (error) {
+        const existingCart = await getCart(existingCartId)
+        if (existingCart) {
+          throw error
+        }
+
         cart = await createCart([{ merchandiseId: variantId, quantity }])
       }
     } else {
       cart = await createCart([{ merchandiseId: variantId, quantity }])
     }
 
-    const count = cart.lines.edges.reduce((total: number, edge: { node: { quantity?: number } }) => total + (edge.node.quantity || 0), 0)
+    const count = cart.lines.edges.reduce(
+      (total: number, edge: { node: { quantity?: number } }) =>
+        total + (edge.node.quantity || 0),
+      0,
+    )
     const response = NextResponse.json({ cart, count })
 
     response.cookies.set(CART_COOKIE, cart.id, {
@@ -42,6 +55,9 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('[Cart API] Add error:', error)
-    return NextResponse.json({ error: 'Nepodarilo sa pridať do košíka' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Nepodarilo sa pridať do košíka' },
+      { status: 500 },
+    )
   }
 }
