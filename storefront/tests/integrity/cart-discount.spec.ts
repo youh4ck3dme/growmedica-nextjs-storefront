@@ -2,8 +2,7 @@ import {
   expect,
   test,
   type APIRequestContext,
-  type APIResponse,
-  type BrowserContext,
+  type Page,
 } from '@playwright/test'
 
 const MOCK_VARIANT_ID = 'gid://shopify/ProductVariant/mock-cordyceps-default'
@@ -32,34 +31,29 @@ async function seedCart(request: APIRequestContext) {
 
   const payload = (await response.json()) as CartResponse
   expect(payload.count).toBe(1)
-  return { cart: payload.cart, response }
+  return payload.cart
 }
 
-async function cartCookieFrom(response: APIResponse) {
-  const setCookieHeader = response.headers()['set-cookie']
-  expect(setCookieHeader).toBeTruthy()
-
-  const cartCookie = setCookieHeader!.split(';')[0]
-  const separatorIndex = cartCookie.indexOf('=')
-
-  return {
-    name: cartCookie.slice(0, separatorIndex),
-    value: cartCookie.slice(separatorIndex + 1),
-  }
+function moneyAmountFrom(text: string) {
+  const amount = text.match(/\d+(?:\.\d+)?/)?.[0]
+  expect(amount).toBeTruthy()
+  return Number(amount)
 }
 
-async function seedBrowserCart(context: BrowserContext) {
-  const { cart, response } = await seedCart(context.request)
-  const cookie = await cartCookieFrom(response)
-  await context.addCookies([
-    {
-      ...cookie,
-      url: new URL('/', response.url()).toString(),
-      httpOnly: true,
-      sameSite: 'Strict',
-    },
-  ])
-  return cart
+async function seedBrowserCart(page: Page) {
+  await page.goto('/produkty/mycomedica-cordyceps-50-90-rastlinnych-kapsul')
+
+  const addToCart = page.locator('#add-to-cart-btn')
+  await expect(addToCart).toBeEnabled()
+  await addToCart.click()
+
+  await expect(page.locator('#cart-button span[aria-hidden="true"]')).toHaveText('1')
+
+  await page.goto('/kosik')
+
+  const total = page.locator('#cart-total-price')
+  await expect(total).toBeVisible()
+  return moneyAmountFrom(await total.innerText())
 }
 
 test.describe('Cart discount flow', () => {
@@ -78,7 +72,7 @@ test.describe('Cart discount flow', () => {
   })
 
   test('applies and removes the ZLAVA10 discount through the cart API', async ({ request }) => {
-    const { cart: seededCart } = await seedCart(request)
+    const seededCart = await seedCart(request)
     const subtotal = Number(seededCart.cost.subtotalAmount.amount)
 
     const applyResponse = await request.post('/api/cart/discount', {
@@ -110,14 +104,11 @@ test.describe('Cart discount flow', () => {
       window.localStorage.setItem('gm_cookie_consent', 'accepted')
     })
 
-    const seededCart = await seedBrowserCart(context)
-    const subtotal = Number(seededCart.cost.subtotalAmount.amount)
+    const subtotal = await seedBrowserCart(page)
     const discountedTotal = (subtotal * 0.9).toFixed(2)
 
-    await page.goto('/kosik')
-
     await expect(page.locator('#discount-input')).toBeVisible()
-    await expect(page.locator('#cart-total-price')).toContainText(seededCart.cost.totalAmount.amount)
+    await expect(page.locator('#cart-total-price')).toContainText(subtotal.toFixed(2))
 
     await page.locator('#discount-input').fill(VALID_DISCOUNT_CODE)
     await page.locator('#apply-discount-btn').click()
@@ -130,6 +121,6 @@ test.describe('Cart discount flow', () => {
     await page.locator('#remove-discount-btn').click()
     await expect(page.locator('#discount-success')).toContainText('Zľava bola odstránená.')
     await expect(page.locator('#applied-discounts')).toHaveCount(0)
-    await expect(page.locator('#cart-total-price')).toContainText(seededCart.cost.totalAmount.amount)
+    await expect(page.locator('#cart-total-price')).toContainText(subtotal.toFixed(2))
   })
 })
