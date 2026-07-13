@@ -11,9 +11,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
   }
 
-  const secret =
-    request.headers.get('x-revalidation-secret') ??
-    request.nextUrl.searchParams.get('secret')
+  const secret = request.headers.get('x-revalidation-secret')
 
   if (secret !== expectedSecret) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

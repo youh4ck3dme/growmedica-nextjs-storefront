@@ -259,6 +259,18 @@ function findVariantById(variantId: string) {
   return null
 }
 
+function cartLineUserErrors(lines: Array<{ merchandiseId: string }>) {
+  const invalidLineIndex = lines.findIndex((line) => !findVariantById(line.merchandiseId))
+  if (invalidLineIndex === -1) return []
+
+  return [
+    {
+      field: ['lines', String(invalidLineIndex), 'merchandiseId'],
+      message: 'Merchandise not found',
+    },
+  ]
+}
+
 function buildMockCartLine(
   lineId: string,
   merchandiseId: string,
@@ -480,6 +492,16 @@ export function getMockShopifyResponse<T>(query: string, variables: Variables = 
 
   if (query.includes('mutation CreateCart')) {
     const lines = (variables.lines ?? []) as Array<{ merchandiseId: string; quantity: number }>
+    const userErrors = cartLineUserErrors(lines)
+    if (userErrors.length > 0) {
+      return {
+        cartCreate: {
+          cart: null,
+          userErrors,
+        },
+      } as T
+    }
+
     const cartId = `gid://shopify/Cart/mock-${++mockCartCounter}`
     const entry = { lines: mergeCartLines([], lines) }
     mockCarts.set(cartId, entry)
@@ -503,6 +525,16 @@ export function getMockShopifyResponse<T>(query: string, variables: Variables = 
         },
       } as T
     }
+    const userErrors = cartLineUserErrors(lines)
+    if (userErrors.length > 0) {
+      return {
+        cartLinesAdd: {
+          cart: buildMockCart(cartId, entry),
+          userErrors,
+        },
+      } as T
+    }
+
     entry.lines = mergeCartLines(entry.lines, lines)
     mockCarts.set(cartId, entry)
     return {
