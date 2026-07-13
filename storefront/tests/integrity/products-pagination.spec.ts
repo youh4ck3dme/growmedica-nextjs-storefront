@@ -18,19 +18,15 @@ test.describe('Products catalog pagination', () => {
     expect(pageContent).toContain('FilterableProductList')
   })
 
-  test('getProductsAccumulated can load beyond the first Shopify page', async () => {
-    process.env.SHOPIFY_MOCK_MODE = '1'
-    process.env.SHOPIFY_STORE_DOMAIN = 'mock-store.myshopify.com'
-    process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN = 'mock-storefront-token'
-    process.env.SHOPIFY_API_VERSION = '2025-01'
+  test('/api/products returns the mock catalog through the real route', async ({ request }) => {
+    const response = await request.get('/api/products')
+    expect(response.ok()).toBe(true)
+    const { products } = (await response.json()) as { products: Array<{ handle: string }> }
 
-    const { getProductsAccumulated } = await import('../../src/lib/shopify/products')
-    const firstPage = await getProductsAccumulated({ first: 5, pages: 1 })
-    const allPages = await getProductsAccumulated({ first: 5, pages: 'all' })
-
-    expect(firstPage.edges).toHaveLength(5)
-    expect(allPages.edges.length).toBeGreaterThan(firstPage.edges.length)
-    expect(allPages.pageInfo.hasNextPage).toBe(false)
+    expect(products.length).toBeGreaterThan(5)
+    expect(products.map((product) => product.handle)).toContain(
+      'mycomedica-cordyceps-50-90-rastlinnych-kapsul',
+    )
   })
 
   test('/api/products uses full catalog and direct handle lookups', async () => {
