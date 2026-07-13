@@ -43,10 +43,10 @@ const PRODUCTS_PAGE_SIZE = 48
 
 /** Fetch pages 1…`pages` and merge edges (for “load more” / ?stranka=N). */
 export async function getProductsAccumulated(
-  options: GetProductsOptions & { pages?: number } = {},
+  options: GetProductsOptions & { pages?: number | 'all' } = {},
 ) {
   const pageSize = options.first ?? PRODUCTS_PAGE_SIZE
-  const pages = Math.max(1, options.pages ?? 1)
+  const pages = options.pages === 'all' ? Number.POSITIVE_INFINITY : Math.max(1, options.pages ?? 1)
   const { query, sortKey = 'BEST_SELLING', reverse = false } = options
 
   const mergedEdges: Connection<ProductListItem>['edges'] = []
