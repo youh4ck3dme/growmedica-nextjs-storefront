@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process'
 import type { NextConfig } from 'next'
 import withSerwistInit from '@serwist/next'
 import { getLegacyRedirectEntries } from './src/lib/category-map'
-import { getDashboardOrigin } from './src/lib/dashboard'
+import { getDashboardFrameSrcDirective } from './src/lib/dashboard'
 
 const categoryRedirects = getLegacyRedirectEntries().map(({ source, destination }) => ({
   source,
@@ -14,12 +14,7 @@ const revision =
   spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf-8' }).stdout?.trim() ||
   crypto.randomUUID()
 
-function buildDashboardFrameSrcDirective(): string {
-  const origin = getDashboardOrigin()
-  return origin ? `'self' ${origin}` : "'self'"
-}
-
-const dashboardCsp = `frame-src ${buildDashboardFrameSrcDirective()}`
+const dashboardCsp = `frame-src ${getDashboardFrameSrcDirective()}`
 
 const withSerwist = withSerwistInit({
   swSrc: 'src/app/sw.ts',
