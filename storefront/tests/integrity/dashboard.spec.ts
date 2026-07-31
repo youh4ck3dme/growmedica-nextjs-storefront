@@ -3,11 +3,40 @@ import path from 'node:path'
 import { test, expect } from '@playwright/test'
 import robots from '../../src/app/robots'
 import { metadata } from '../../src/app/dashboard/layout'
+import {
+  getDashboardOrigin,
+  getDashboardUrl,
+  isDashboardRouteHeader,
+} from '../../src/lib/dashboard'
 
 const REPO_ROOT = path.resolve(__dirname, '../../..')
 const DASHBOARD_PAGE_PATH = path.join(REPO_ROOT, 'storefront/src/app/dashboard/page.tsx')
 const ROOT_LAYOUT_PATH = path.join(REPO_ROOT, 'storefront/src/app/layout.tsx')
 const MIDDLEWARE_PATH = path.join(REPO_ROOT, 'storefront/src/middleware.ts')
+
+function withDashboardUrl(value: string | undefined, assertion: () => void) {
+  const hadOriginalValue = Object.prototype.hasOwnProperty.call(
+    process.env,
+    'NEXT_PUBLIC_DASHBOARD_URL',
+  )
+  const originalValue = process.env.NEXT_PUBLIC_DASHBOARD_URL
+
+  try {
+    if (value === undefined) {
+      delete process.env.NEXT_PUBLIC_DASHBOARD_URL
+    } else {
+      process.env.NEXT_PUBLIC_DASHBOARD_URL = value
+    }
+
+    assertion()
+  } finally {
+    if (hadOriginalValue) {
+      process.env.NEXT_PUBLIC_DASHBOARD_URL = originalValue
+    } else {
+      delete process.env.NEXT_PUBLIC_DASHBOARD_URL
+    }
+  }
+}
 
 test.describe('Dashboard route — smoke', () => {
   test('returns 200', () => {
@@ -71,6 +100,41 @@ test.describe('Dashboard route — smoke', () => {
   test('contains meta title and robot policies', () => {
     expect(metadata.title).toBe('Dashboard')
     expect(metadata.robots).toEqual({ index: false, follow: false })
+  })
+})
+
+test.describe('Dashboard URL helpers', () => {
+  test('normalizes configured web URLs and exposes only the origin for CSP', () => {
+    withDashboardUrl(
+      '  https://growmedica-nexus.lovable.app/admin/prihlasenie?embed=1#login  ',
+      () => {
+        expect(getDashboardUrl()).toBe(
+          'https://growmedica-nexus.lovable.app/admin/prihlasenie?embed=1#login',
+        )
+        expect(getDashboardOrigin()).toBe('https://growmedica-nexus.lovable.app')
+      },
+    )
+
+    withDashboardUrl('http://localhost:5173/admin', () => {
+      expect(getDashboardUrl()).toBe('http://localhost:5173/admin')
+      expect(getDashboardOrigin()).toBe('http://localhost:5173')
+    })
+  })
+
+  test('rejects missing, malformed, and non-web dashboard URLs', () => {
+    for (const value of [undefined, '', '   ', 'not a url', 'ftp://example.com/admin']) {
+      withDashboardUrl(value, () => {
+        expect(getDashboardUrl()).toBeUndefined()
+        expect(getDashboardOrigin()).toBeUndefined()
+      })
+    }
+  })
+
+  test('accepts only the exact dashboard route header marker', () => {
+    expect(isDashboardRouteHeader('1')).toBe(true)
+    expect(isDashboardRouteHeader('true')).toBe(false)
+    expect(isDashboardRouteHeader(' 1 ')).toBe(false)
+    expect(isDashboardRouteHeader(null)).toBe(false)
   })
 })
 
